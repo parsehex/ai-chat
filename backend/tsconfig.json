@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "nodenext",
+    "outDir": "./dist/",
+    "strict": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["node_modules", "**/prompt_parts.ts"]
+}

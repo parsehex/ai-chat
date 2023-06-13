@@ -2,12 +2,23 @@
   "name": "ai-chat",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {},
+  "type": "module",
+  "scripts": {
+    "build:backend": "npm run --prefix ./backend build",
+    "build:frontend": "npm run --prefix ./frontend build",
+    "dev:backend": "npm --prefix ./backend run dev",
+    "dev:frontend": "npm --prefix ./frontend run dev",
+    "start": "npm --prefix ./backend run dev-server",
+    "server": "npm --prefix ./backend start",
+    "build": "concurrently \"npm run build:backend\" \"npm run dev:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "concurrently": "^8.0.1"
+  },
+  "devDependencies": {
   }
 }
