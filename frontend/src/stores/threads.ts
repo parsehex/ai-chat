@@ -8,6 +8,7 @@ export const useThreadStore = defineStore({
 	state: () => ({
 		threads: [] as Thread[],
 		currentThreadId: '',
+		apiCallInProgress: false,
 	}),
 	actions: {
 		setThreads(threads: Thread[]) {
