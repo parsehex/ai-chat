@@ -9,8 +9,18 @@
 		</div>
 		<div ref="messageContainer" class="message-container">
 			<div v-if="!thread">No thread selected</div>
-			<div v-if="thread" v-for="(message, i) in thread.messages" :key="`${thread.id}-${i}`">
-				<div>{{ message.role }}: {{ message.content }}</div>
+			<div v-if="thread" v-for="message in thread.messages" :key="message.id">
+				<div v-if="!isEditing(message.id)"> {{ message.role }}: {{ message.content }} <button
+						@click="startEditing(message.id)">Edit</button>
+					<button @click="deleteMessage(message.id)">Delete</button>
+				</div>
+				<div v-else class="flex">
+					<input class="flex-grow" v-model="message.content" />
+					<button @click="updateMessage(
+						message.id,
+						message.content
+					)">Update</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -23,6 +33,7 @@ import { useThreadStore } from '@/stores/threads'
 const threadStore = useThreadStore()
 const messageContainer = ref(null as HTMLDivElement | null)
 const systemPrompt = ref('')
+const editingMessageId = ref('')
 
 const threadId = computed(() => threadStore.$state.currentThreadId)
 const thread = computed(() => {
@@ -71,6 +82,37 @@ async function clearHistory() {
 		await threadStore.clearThreadHistory(threadId.value)
 	}
 }
+
+async function updateMessage(id: string, content: string) {
+	const message = thread.value?.messages.find(message => message.id === id);
+	if (message) {
+		await threadStore.updateMessage(threadId.value, id, content);
+		stopEditing()
+	}
+}
+
+async function deleteMessage(id: string) {
+	await threadStore.deleteMessageFromThread({
+		threadId: threadId.value,
+		messageId: id
+	})
+}
+
+// A method to start editing a message
+function startEditing(messageId: string) {
+	editingMessageId.value = messageId
+}
+
+// A method to stop editing a message
+function stopEditing() {
+	editingMessageId.value = ''
+}
+
+// A method to check if a message is being edited
+function isEditing(messageId: string) {
+	return editingMessageId.value === messageId
+}
+
 </script>
 
 <style scoped>

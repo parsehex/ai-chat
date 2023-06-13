@@ -2,11 +2,12 @@ import { Router } from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 import { THREADS_PATH } from '../const.js';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 
 const router = Router();
 
-router.route('/api/threads')
+router
+	.route('/api/threads')
 	.get(async (req, res) => {
 		try {
 			const fileNames = await fs.readdir(THREADS_PATH);
@@ -33,7 +34,7 @@ router.route('/api/threads')
 		}
 
 		try {
-			const id = uuidv4(); // Generate a new UUID
+			const id = v4();
 			const filePath = path.join(THREADS_PATH, `${id}.json`);
 
 			const threadData = {
@@ -52,7 +53,8 @@ router.route('/api/threads')
 		}
 	});
 
-router.route('/api/threads/:threadId')
+router
+	.route('/api/threads/:threadId')
 	.get(async (req, res) => {
 		try {
 			const threadId = req.params.threadId;
@@ -72,7 +74,8 @@ router.route('/api/threads/:threadId')
 		} catch (err: any) {
 			res.status(500).json({ error: err.message });
 		}
-	}).patch(async (req, res) => {
+	})
+	.patch(async (req, res) => {
 		try {
 			const threadId = req.params.threadId;
 			const newPrompt = req.body.systemPrompt;
@@ -117,5 +120,57 @@ router.route('/api/threads/:threadId/clear').post(async (req, res) => {
 		res.status(500).json({ error: err.message });
 	}
 });
+
+router
+	.route('/api/threads/:threadId/messages/:messageId')
+	.delete(async (req, res) => {
+		try {
+			const threadId = req.params.threadId;
+			const messageId = req.params.messageId;
+			const threadFilePath = path.join(THREADS_PATH, `${threadId}.json`);
+			let threadData = JSON.parse(await fs.readFile(threadFilePath, 'utf-8'));
+
+			threadData.messages = threadData.messages.filter(
+				(message) => message.id !== messageId
+			);
+
+			await fs.writeFile(threadFilePath, JSON.stringify(threadData));
+
+			res.json(threadData);
+		} catch (err: any) {
+			res.status(500).json({ error: err.message });
+		}
+	})
+	.patch(async (req, res) => {
+		try {
+			const { threadId, messageId } = req.params;
+			const { content } = req.body; // The new content for the message
+
+			if (!content) {
+				return res.status(400).json({ error: 'Message content is required' });
+			}
+
+			const threadFilePath = path.join(THREADS_PATH, `${threadId}.json`);
+			let threadData = JSON.parse(await fs.readFile(threadFilePath, 'utf-8'));
+
+			// Find the message to edit
+			const messageIndex = threadData.messages.findIndex(
+				(message) => message.id === messageId
+			);
+
+			if (messageIndex === -1) {
+				return res.status(404).json({ error: 'Message not found' });
+			}
+
+			// Edit the message
+			threadData.messages[messageIndex].content = content;
+
+			await fs.writeFile(threadFilePath, JSON.stringify(threadData));
+
+			res.json(threadData);
+		} catch (err: any) {
+			res.status(500).json({ error: err.message });
+		}
+	});
 
 export default router;

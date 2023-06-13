@@ -14,7 +14,7 @@ export const useThreadStore = defineStore({
 			this.threads = threads;
 		},
 		setThread(thread: Thread) {
-			const threadIndex = this.threads.findIndex(t => t.id === thread.id);
+			const threadIndex = this.threads.findIndex((t) => t.id === thread.id);
 			if (threadIndex !== -1) {
 				this.threads[threadIndex] = thread;
 			}
@@ -22,26 +22,44 @@ export const useThreadStore = defineStore({
 		setCurrentThread(threadId: string) {
 			this.currentThreadId = threadId;
 		},
-		addMessageToThread({ threadId, message }: { threadId: string, message: Message }) {
-			const threadIndex = this.threads.findIndex(t => t.id === threadId);
+		addMessageToThread({
+			threadId,
+			message,
+		}: {
+			threadId: string;
+			message: Message;
+		}) {
+			const threadIndex = this.threads.findIndex((t) => t.id === threadId);
 			if (threadIndex !== -1) {
 				this.threads[threadIndex].messages.push(message);
 			}
 		},
 		async fetchThreads() {
-			const response = await axios.get('/api/threads');
-			this.threads = response.data;
+			try {
+				const response = await axios.get('/api/threads');
+				this.threads = response.data;
+			} catch (error: any) {
+				console.error('Failed to fetch threads:', error);
+			}
 		},
 		async fetchThread(threadId: string) {
-			const response = await axios.get(`/api/threads/${threadId}`);
-			const threadIndex = this.threads.findIndex(t => t.id === threadId);
-			if (threadIndex !== -1) {
-				this.threads[threadIndex] = response.data;
+			try {
+				const response = await axios.get(`/api/threads/${threadId}`);
+				const threadIndex = this.threads.findIndex((t) => t.id === threadId);
+				if (threadIndex !== -1) {
+					this.threads[threadIndex] = response.data;
+				}
+			} catch (error: any) {
+				console.error('Failed to fetch thread:', error);
 			}
 		},
 		async createThread({ name }: { name: string }) {
-			const response = await axios.post('/api/threads', { name })
-			this.threads.push(response.data)
+			try {
+				const response = await axios.post('/api/threads', { name });
+				this.threads.push(response.data);
+			} catch (error: any) {
+				console.error('Failed to create thread:', error);
+			}
 		},
 		async deleteThread(threadId: string) {
 			try {
@@ -57,7 +75,7 @@ export const useThreadStore = defineStore({
 		async clearThreadHistory(threadId: string) {
 			try {
 				const response = await axios.post(`/api/threads/${threadId}/clear`);
-				const threadIndex = this.threads.findIndex(t => t.id === threadId);
+				const threadIndex = this.threads.findIndex((t) => t.id === threadId);
 				if (threadIndex !== -1) {
 					this.threads[threadIndex] = response.data;
 				}
@@ -67,13 +85,50 @@ export const useThreadStore = defineStore({
 		},
 		async updateSystemPrompt(threadId: string, newPrompt: string) {
 			try {
-				const response = await axios.patch(`/api/threads/${threadId}`, { systemPrompt: newPrompt });
-				const threadIndex = this.threads.findIndex(t => t.id === threadId);
+				const response = await axios.patch(`/api/threads/${threadId}`, {
+					systemPrompt: newPrompt,
+				});
+				const threadIndex = this.threads.findIndex((t) => t.id === threadId);
 				if (threadIndex !== -1) {
 					this.threads[threadIndex] = response.data;
 				}
 			} catch (error) {
 				console.error('Failed to update system prompt:', error);
+			}
+		},
+		async updateMessage(threadId: string, messageId: string, content: string) {
+			try {
+				const response = await axios.patch(
+					`/api/threads/${threadId}/messages/${messageId}`,
+					{
+						content,
+					}
+				);
+				const threadIndex = this.threads.findIndex((t) => t.id === threadId);
+				if (threadIndex !== -1) {
+					this.threads[threadIndex] = response.data;
+				}
+			} catch (error) {
+				console.error('Failed to update message:', error);
+			}
+		},
+		async deleteMessageFromThread({
+			threadId,
+			messageId,
+		}: {
+			threadId: string;
+			messageId: string;
+		}) {
+			try {
+				const response = await axios.delete(
+					`/api/threads/${threadId}/messages/${messageId}`
+				);
+				const threadIndex = this.threads.findIndex((t) => t.id === threadId);
+				if (threadIndex !== -1) {
+					this.threads[threadIndex] = response.data;
+				}
+			} catch (error: any) {
+				console.error('Failed to delete message from thread:', error);
 			}
 		},
 	},

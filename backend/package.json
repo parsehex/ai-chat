@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "start": "node -r dotenv/config ./dist/server.js",
-    "dev-server": "nodemon -r dotenv/config ./dist/server.js"
+    "start": "node -r dotenv/config ./dist/backend/src/server.js",
+    "dev-server": "nodemon -r dotenv/config ./dist/backend/src/server.js"
   },
   "keywords": [],
   "author": "",
