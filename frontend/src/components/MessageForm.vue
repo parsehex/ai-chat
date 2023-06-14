@@ -4,7 +4,7 @@
 		<input type="checkbox" id="tts" v-model="useTTS" />
 		<label for="tts">Use Text-to-Speech</label>
 		<button type="submit">Send</button>
-		<audio v-if="ttsUrl" ref="audio" controls :src="ttsUrl"></audio>
+		<audio ref="audio" controls :src="ttsUrl" :style="{ visibility: ttsUrl ? 'visible' : 'hidden' }"></audio>
 		<div v-if="threadStore.apiCallInProgress" class="spinner"></div>
 	</form>
 </template>
@@ -79,6 +79,7 @@ const sendMessage = async () => {
 <style scoped>
 form {
 	display: flex;
+	height: 3rem;
 }
 
 input {
@@ -102,5 +103,9 @@ input {
 	100% {
 		transform: rotate(360deg);
 	}
+}
+
+audio {
+	height: 100%;
 }
 </style>
