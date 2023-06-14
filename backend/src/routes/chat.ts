@@ -1,16 +1,17 @@
-import fs from 'fs-extra';
-import path from 'path';
 import { Router } from 'express';
-import openai from '../openai.js';
-import { THREADS_PATH } from '../const.js';
+import fs from 'fs-extra';
+import { type ChatCompletionRequestMessage } from 'openai';
+import path from 'path';
 import { v4 } from 'uuid';
 import { Thread } from '../../../shared/types.js';
-import { ChatCompletionRequestMessage } from 'openai';
+import { THREADS_PATH } from '../const.js';
+import { sendMessage } from '../openai.js';
+import { convertTextToSpeech, getRandomVoice } from '../tts.js';
 
 const router = Router();
 
 router.route('/api/chat').post(async (req, res) => {
-	const { message, id } = req.body;
+	const { message, id, useTTS } = req.body;
 
 	if (!id) {
 		return res.status(400).json({ error: 'Thread id is required' });
@@ -18,49 +19,54 @@ router.route('/api/chat').post(async (req, res) => {
 
 	try {
 		const threadFilePath = path.join(THREADS_PATH, `${id}.json`);
-		const threadData: Thread = JSON.parse(
+		const thread: Thread = JSON.parse(
 			await fs.readFile(threadFilePath, 'utf-8')
 		);
 
-		const history = threadData.messages.map((message) => {
+		const history = thread.messages.map((message) => {
 			return {
 				role: message.role,
 				content: message.content,
 			} as ChatCompletionRequestMessage;
 		});
 
-		const chatResponse = await openai.createChatCompletion({
-			model: 'gpt-3.5-turbo',
-			messages: [
-				{
-					role: 'system',
-					content: threadData.systemPrompt,
-				},
-				...history,
-				{
-					role: 'user',
-					content: message,
-				},
-			],
-		});
+		const chatResponse = await sendMessage(
+			thread.systemPrompt,
+			history,
+			message
+		);
 		const responseObj = chatResponse.data.choices[0].message;
 
 		if (!responseObj) {
 			return res.status(500).json({ error: 'No response from AI' });
 		}
 
-		threadData.messages.push({ id: v4(), role: 'user', content: message });
-		threadData.messages.push({
+		thread.messages.push({ id: v4(), role: 'user', content: message });
+		thread.messages.push({
 			id: v4(),
 			role: 'assistant',
 			content: responseObj.content,
 		});
 
-		await fs.writeFile(threadFilePath, JSON.stringify(threadData));
+		await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
-		res.json(threadData);
+		if (useTTS) {
+			const voice = await getRandomVoice();
+			const ttsResponse = await convertTextToSpeech(
+				voice.voice_id,
+				responseObj.content
+			);
+			// console.log('Voice:', voice.name, 'TTS Response:', ttsResponse);
+
+			return res.json({
+				thread,
+				ttsResponse,
+			});
+		}
+
+		res.json({ thread });
 	} catch (err: any) {
-		// console.log(err);
+		console.log(err);
 		res.status(500).json({ error: err.message });
 	}
 });

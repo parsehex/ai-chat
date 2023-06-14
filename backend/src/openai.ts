@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from 'openai';
 
 const configuration = new Configuration({
 	apiKey: process.env.OPENAI_API_KEY as string,
@@ -6,3 +6,25 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export default openai;
+
+export async function sendMessage(
+	systemPrompt: string,
+	history: ChatCompletionRequestMessage[],
+	userMessage: string
+) {
+	const chatResponse = await openai.createChatCompletion({
+		model: 'gpt-3.5-turbo',
+		messages: [
+			{
+				role: 'system',
+				content: systemPrompt,
+			},
+			...history,
+			{
+				role: 'user',
+				content: userMessage,
+			},
+		],
+	});
+	return chatResponse;
+}

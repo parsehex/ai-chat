@@ -1,7 +1,10 @@
 <template>
 	<form v-if="threadId" @submit.prevent="sendMessage">
 		<input v-model="message" type="text" />
+		<input type="checkbox" id="tts" v-model="useTTS" />
+		<label for="tts">Use Text-to-Speech</label>
 		<button type="submit">Send</button>
+		<audio v-if="ttsUrl" controls :src="ttsUrl"></audio>
 		<div v-if="threadStore.apiCallInProgress" class="spinner"></div>
 	</form>
 </template>
@@ -16,6 +19,8 @@ import type { Message } from '@shared/types';
 const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId)
 const message = ref('');
+const useTTS = ref(false);
+const ttsUrl = ref('');  // Add a ref to hold the URL of the TTS file
 
 const sendMessage = async () => {
 	if (message.value) {
@@ -27,9 +32,14 @@ const sendMessage = async () => {
 		message.value = '';
 		threadStore.addMessageToThread({ threadId: threadId.value, message: newMessage });
 		try {
-			const updatedThread = await axios.post('/api/chat', { message: newMessage.content, id: threadId.value });
+			const updatedThread = await axios.post('/api/chat', { message: newMessage.content, id: threadId.value, useTTS: useTTS.value });
 			if (updatedThread.data) {
-				threadStore.setThread(updatedThread.data);
+				threadStore.setThread(updatedThread.data.thread);
+				if (updatedThread.data.ttsResponse) {
+					ttsUrl.value = `/tts/${updatedThread.data.ttsResponse}`; // Update the TTS URL
+				} else {
+					ttsUrl.value = ''; // Clear the TTS URL if no TTS response is received
+				}
 			}
 		} catch (error: any) {
 			console.error('Failed to send message:', error);
@@ -38,8 +48,6 @@ const sendMessage = async () => {
 		}
 	}
 };
-
-
 </script>
 
 <style scoped>
