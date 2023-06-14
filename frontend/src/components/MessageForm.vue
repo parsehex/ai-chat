@@ -4,11 +4,15 @@
 		<input type="checkbox" id="tts" v-model="useTTS" />
 		<label for="tts">Use Text-to-Speech</label>
 		<button type="submit">Send</button>
-		<audio ref="audio" controls :src="ttsUrl" :style="{ visibility: ttsUrl ? 'visible' : 'hidden' }"></audio>
+		<audio
+			ref="audio"
+			controls
+			:src="ttsUrl"
+			:style="{ visibility: ttsUrl ? 'visible' : 'hidden' }"
+		></audio>
 		<div v-if="threadStore.apiCallInProgress" class="spinner"></div>
 	</form>
 </template>
-
 
 <script setup lang="ts">
 import { computed, ref, onUnmounted } from 'vue';
@@ -17,7 +21,7 @@ import { useThreadStore } from '@/stores/threads';
 import type { Message } from '@shared/types';
 
 const threadStore = useThreadStore();
-const threadId = computed(() => threadStore.$state.currentThreadId)
+const threadId = computed(() => threadStore.$state.currentThreadId);
 const message = ref('');
 const useTTS = ref(false);
 const ttsUrl = ref('');
@@ -45,14 +49,23 @@ const pollTTS = async (url: string) => {
 const sendMessage = async () => {
 	if (message.value) {
 		threadStore.apiCallInProgress = true;
-		const newMessage: Message = JSON.parse(JSON.stringify({
-			role: 'user',
-			content: message.value
-		}));
+		const newMessage: Message = JSON.parse(
+			JSON.stringify({
+				role: 'user',
+				content: message.value,
+			})
+		);
 		message.value = '';
-		threadStore.addMessageToThread({ threadId: threadId.value, message: newMessage });
+		threadStore.addMessageToThread({
+			threadId: threadId.value,
+			message: newMessage,
+		});
 		try {
-			const updatedThread = await axios.post('/api/chat', { message: newMessage.content, id: threadId.value, useTTS: useTTS.value });
+			const updatedThread = await axios.post('/api/chat', {
+				message: newMessage.content,
+				id: threadId.value,
+				useTTS: useTTS.value,
+			});
 			if (updatedThread.data) {
 				threadStore.setThread(updatedThread.data.thread);
 				if (updatedThread.data.ttsResponse) {
