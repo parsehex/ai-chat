@@ -4,14 +4,14 @@
 		<input type="checkbox" id="tts" v-model="useTTS" />
 		<label for="tts">Use Text-to-Speech</label>
 		<button type="submit">Send</button>
-		<audio v-if="ttsUrl" controls :src="ttsUrl"></audio>
+		<audio v-if="ttsUrl" ref="audio" controls :src="ttsUrl"></audio>
 		<div v-if="threadStore.apiCallInProgress" class="spinner"></div>
 	</form>
 </template>
 
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onUnmounted } from 'vue';
 import axios from 'axios';
 import { useThreadStore } from '@/stores/threads';
 import type { Message } from '@shared/types';
@@ -20,7 +20,27 @@ const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId)
 const message = ref('');
 const useTTS = ref(false);
-const ttsUrl = ref('');  // Add a ref to hold the URL of the TTS file
+const ttsUrl = ref('');
+const audio = ref(null as HTMLAudioElement | null);
+
+const pollTTS = async (url: string) => {
+	return new Promise<void>((resolve, reject) => {
+		const interval = setInterval(async () => {
+			try {
+				const response = await axios.head(url);
+				if (response.status === 200) {
+					clearInterval(interval);
+					resolve();
+				}
+			} catch (error: any) {
+				if (error.response && error.response.status !== 404) {
+					clearInterval(interval);
+					reject(error);
+				}
+			}
+		}, 1000);
+	});
+};
 
 const sendMessage = async () => {
 	if (message.value) {
@@ -36,9 +56,15 @@ const sendMessage = async () => {
 			if (updatedThread.data) {
 				threadStore.setThread(updatedThread.data.thread);
 				if (updatedThread.data.ttsResponse) {
-					ttsUrl.value = `/tts/${updatedThread.data.ttsResponse}`; // Update the TTS URL
+					await pollTTS(`/tts/${updatedThread.data.ttsResponse}`);
+					ttsUrl.value = `/tts/${updatedThread.data.ttsResponse}`;
+					setTimeout(() => {
+						if (audio.value) {
+							audio.value.play();
+						}
+					}, 1000);
 				} else {
-					ttsUrl.value = ''; // Clear the TTS URL if no TTS response is received
+					ttsUrl.value = '';
 				}
 			}
 		} catch (error: any) {

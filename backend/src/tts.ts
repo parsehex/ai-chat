@@ -12,7 +12,7 @@ export const getRandomVoice = async () => {
 	try {
 		const response = await ElevenLabs.getVoices(API_KEY);
 		const { voices } = response;
-		console.log('Voices:', voices);
+		// console.log('Voices:', voices);
 
 		const randomIndex = Math.floor(Math.random() * voices.length);
 		const randomVoice = voices[randomIndex];

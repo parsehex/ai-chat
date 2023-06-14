@@ -13,8 +13,10 @@ const router = Router();
 router.route('/api/chat').post(async (req, res) => {
 	const { message, id, useTTS } = req.body;
 
-	if (!id) {
-		return res.status(400).json({ error: 'Thread id is required' });
+	if (!id || !message) {
+		return res
+			.status(400)
+			.json({ error: 'Thread id and a message is required' });
 	}
 
 	try {
