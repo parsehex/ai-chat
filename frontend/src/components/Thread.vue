@@ -1,23 +1,48 @@
 <template>
-	<div>
-		<h2>Thread {{ thread?.name }}</h2>
-		<button v-if="thread" @click="clearHistory">Clear History</button>
-		<div class="system-prompt">
-			<label for="systemPrompt">System prompt:</label>
-			<input id="systemPrompt" v-model="systemPrompt" type="text" />
-			<button @click="updateSystemPrompt">Update System Prompt</button>
+	<div class="flex flex-col h-full">
+		<div class="sticky bg-gray-700 top-0 z-10">
+			<h2>{{ thread?.name }}</h2>
+			<button class="btn-err" v-if="thread" @click="clearHistory">
+				Clear History
+			</button>
+			<div class="system-prompt">
+				<label for="systemPrompt">System prompt:</label>
+				<input id="systemPrompt" v-model="systemPrompt" type="text" />
+				<button class="btn" @click="updateSystemPrompt">
+					Update System Prompt
+				</button>
+			</div>
 		</div>
-		<div ref="messageContainer" class="message-container">
+		<div
+			ref="messageContainer"
+			class="message-container overflow-auto flex-grow"
+		>
 			<div v-if="!thread">No thread selected</div>
-			<div v-if="thread" v-for="message in thread.messages" :key="message.id">
-				<div v-if="!isEditing(message.id)">
+			<div
+				v-if="thread"
+				class="hover:bg-gray-400 hover:text-gray-800 transition-colors duration-200 p-1"
+				v-for="message in thread.messages"
+				:key="message.id"
+			>
+				<div
+					v-if="!isEditing(message.id)"
+					class="flex items-center justify-between"
+				>
 					{{ message.role }}: {{ message.content }}
-					<button @click="startEditing(message.id)">Edit</button>
-					<button @click="deleteMessage(message.id)">Delete</button>
+					<span>
+						<button class="btn" @click="startEditing(message.id)">Edit</button>
+						<button class="btn" @click="deleteMessage(message.id)">
+							Delete
+						</button>
+					</span>
 				</div>
 				<div v-else class="flex">
+					<!-- editing -->
 					<input class="flex-grow" v-model="message.content" />
-					<button @click="updateMessage(message.id, message.content)">
+					<button
+						class="btn"
+						@click="updateMessage(message.id, message.content)"
+					>
 						Update
 					</button>
 				</div>

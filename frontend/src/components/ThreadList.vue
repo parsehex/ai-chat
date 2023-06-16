@@ -7,17 +7,27 @@
 				type="text"
 				placeholder="New thread name"
 			/>
-			<button type="submit">Create Thread</button>
+			<button class="btn-succ" type="submit">Create Thread</button>
 		</form>
 		<ul>
-			<li v-for="thread in threads" :key="thread.id">
+			<li
+				:class="{
+					flex: true,
+					'justify-between': true,
+					'bg-gray-500': isSelectedThread(thread.id),
+				}"
+				v-for="thread in threads"
+				:key="thread.id"
+			>
 				<span
 					@click="selectThread(thread.id)"
-					:class="{ active: thread.id === currentThread }"
+					:class="{ 'font-bold': isSelectedThread(thread.id) }"
 				>
 					{{ thread.name }}
 				</span>
-				<button class="delete" @click="deleteThread(thread.id)">Delete</button>
+				<button class="btn-err ml-1" @click="deleteThread(thread.id)">
+					Delete
+				</button>
 			</li>
 		</ul>
 	</div>
@@ -30,6 +40,9 @@ import { useThreadStore } from '@/stores/threads';
 const store = useThreadStore();
 const threads = computed(() => store.$state.threads);
 const currentThread = computed(() => store.$state.currentThreadId);
+const isSelectedThread = computed(() => {
+	return (threadId: string) => threadId === currentThread.value;
+});
 
 let newThreadName = ref('');
 
