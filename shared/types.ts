@@ -2,6 +2,7 @@ export interface Message {
 	id: string;
 	role: string;
 	content: string;
+	tts?: string;
 }
 
 export interface Thread {

@@ -3,10 +3,10 @@ import fs from 'fs-extra';
 import { type ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import { v4 } from 'uuid';
-import { Thread } from '../../../shared/types.js';
+import { Message, Thread } from '../../../shared/types.js';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
-import { convertTextToSpeech, getRandomVoice } from '../tts.js';
+import { convertTextToSpeech, getRandomVoice, getVoiceByName } from '../tts.js';
 
 const router = Router();
 
@@ -43,22 +43,27 @@ router.route('/api/chat').post(async (req, res) => {
 			return res.status(500).json({ error: 'No response from AI' });
 		}
 
-		thread.messages.push({ id: v4(), role: 'user', content: message });
-		thread.messages.push({
+		const userMessage: Message = { id: v4(), role: 'user', content: message };
+		const aiMessage: Message = {
 			id: v4(),
 			role: 'assistant',
 			content: responseObj.content,
-		});
+		};
+		thread.messages.push(userMessage);
+		thread.messages.push(aiMessage);
 
 		await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
 		if (useTTS) {
-			const voice = await getRandomVoice();
+			const voice = await getVoiceByName('Rachel');
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
 				responseObj.content
 			);
 			// console.log('Voice:', voice.name, 'TTS Response:', ttsResponse);
+
+			aiMessage.tts = ttsResponse;
+			await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
 			return res.json({
 				thread,

@@ -6,6 +6,7 @@ import { FRONTEND_PATH, TTS_PATH } from './const.js';
 
 import threadsRouter from './routes/threads.js';
 import chatRouter from './routes/chat.js';
+import transcribeRouter from './routes/transcribe.js';
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use('/tts', express.static(TTS_PATH));
 
 app.use(threadsRouter);
 app.use(chatRouter);
+app.use(transcribeRouter);
 
 app.get('*', (req, res) => {
 	res.sendFile(path.resolve(FRONTEND_PATH, 'index.html'));

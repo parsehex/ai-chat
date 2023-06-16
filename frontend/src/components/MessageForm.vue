@@ -1,16 +1,32 @@
 <template>
-	<form v-if="threadId" @submit.prevent="sendMessage">
-		<input v-model="message" type="text" />
-		<input type="checkbox" id="tts" v-model="useTTS" />
-		<label for="tts">Use Text-to-Speech</label>
-		<button type="submit">Send</button>
+	<form
+		class="flex container p-1"
+		v-if="threadId"
+		@submit.prevent="sendMessage"
+	>
+		<button class="btn" type="button" @click="toggleRecording">
+			{{ isRecording ? 'Stop' : 'Record' }}
+		</button>
+		<textarea
+			class="flex-grow p-2 border-2 border-gray-300 rounded-md"
+			v-model="message"
+		></textarea>
+		<label class="text-gray-600">
+			<input class="mr-2" type="checkbox" v-model="useTTS" />
+			TTS
+		</label>
+		<button class="btn" type="submit">Send</button>
 		<audio
+			class="opacity-75 hover:opacity-100"
 			ref="audio"
 			controls
 			:src="ttsUrl"
 			:style="{ visibility: ttsUrl ? 'visible' : 'hidden' }"
 		></audio>
-		<div v-if="threadStore.apiCallInProgress" class="spinner"></div>
+		<div
+			class="spinner border-t-2 border-indigo-500"
+			v-if="threadStore.apiCallInProgress"
+		></div>
 	</form>
 </template>
 
@@ -26,6 +42,57 @@ const message = ref('');
 const useTTS = ref(false);
 const ttsUrl = ref('');
 const audio = ref(null as HTMLAudioElement | null);
+const isRecording = ref(false);
+const recordedAudio = ref(null as Blob | null);
+
+let mediaRecorder: MediaRecorder | null = null;
+
+const sendAudio = async () => {
+	console.log('Uploading audio to server...');
+	if (recordedAudio.value) {
+		console.log(typeof recordedAudio.value);
+		const formData = new FormData();
+		formData.append('audio', recordedAudio.value, 'audio.webm');
+		try {
+			const res = await axios.post('/api/transcribe', formData);
+			console.log('Transcription response:', res.data);
+			if (res.data && res.data.transcription) {
+				message.value = res.data.transcription;
+			}
+		} catch (error) {
+			console.error('Failed to transcribe message:', error);
+		}
+	} else {
+		console.error('No recorded audio to upload.');
+	}
+};
+
+const toggleRecording = async () => {
+	if (!isRecording.value) {
+		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+		mediaRecorder = new MediaRecorder(stream);
+		const chunks: Blob[] = [];
+
+		// push to chunks on 'dataavailable'
+		mediaRecorder.addEventListener('dataavailable', (e) => {
+			if (e.data.size > 0) {
+				chunks.push(e.data);
+			}
+		});
+
+		// save blob to ref on 'stop'
+		mediaRecorder.addEventListener('stop', () => {
+			recordedAudio.value = new Blob(chunks, { type: 'audio/webm' });
+			sendAudio();
+		});
+
+		mediaRecorder.start();
+		isRecording.value = true;
+	} else if (mediaRecorder) {
+		mediaRecorder.stop();
+		isRecording.value = false;
+	}
+};
 
 const pollTTS = async (url: string) => {
 	return new Promise<void>((resolve, reject) => {
@@ -47,6 +114,16 @@ const pollTTS = async (url: string) => {
 };
 
 const sendMessage = async () => {
+	if (isRecording.value) {
+		await sendAudio();
+		if (mediaRecorder) {
+			mediaRecorder.stop();
+			isRecording.value = false;
+		}
+		//
+		return;
+	}
+
 	if (message.value) {
 		threadStore.apiCallInProgress = true;
 		const newMessage: Message = JSON.parse(
@@ -87,6 +164,12 @@ const sendMessage = async () => {
 		}
 	}
 };
+
+onUnmounted(() => {
+	if (mediaRecorder) {
+		mediaRecorder.stop();
+	}
+});
 </script>
 
 <style scoped>
