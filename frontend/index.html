@@ -7,7 +7,31 @@
 		<title>Chat App</title>
 	</head>
 	<body>
-		<div id="main"></div>
+		<div
+			id="main"
+			class="bg-white dark:bg-gray-900 text-black dark:text-gray-100"
+		></div>
 		<script type="module" src="/src/main.ts"></script>
+		<script>
+			// Detects if the user's system is set to dark mode
+			if (
+				window.matchMedia &&
+				window.matchMedia('(prefers-color-scheme: dark)').matches
+			) {
+				// Add the 'dark' class to the body
+				document.body.classList.add('dark');
+			}
+
+			// Watches for changes to the prefers-color-scheme media query
+			window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+				if (e.matches) {
+					// If the system switches to dark mode, add the 'dark' class
+					document.body.classList.add('dark');
+				} else {
+					// If the system switches to light mode, remove the 'dark' class
+					document.body.classList.remove('dark');
+				}
+			});
+		</script>
 	</body>
 </html>

@@ -1,7 +1,17 @@
-@import './base.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn {
+	@apply px-2 py-1 bg-blue-400 text-white rounded shadow hover:bg-blue-600 transition-colors duration-200;
+}
+.btn-succ {
+	@apply px-2 py-1 bg-green-400 text-white rounded shadow hover:bg-green-600 transition-colors duration-200;
+}
+
+.btn-err {
+	@apply px-2 py-1 bg-red-400 text-white rounded shadow hover:bg-red-600 transition-colors duration-200;
+}
 
 #app {
 	max-width: 1280px;
@@ -37,4 +47,8 @@ a,
 		width: 100%;
 		padding: 0 2rem;
 	}
+}
+
+input[type='text'] {
+	color: #111;
 }

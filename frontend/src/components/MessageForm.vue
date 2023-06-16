@@ -173,22 +173,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-form {
-	display: flex;
-	height: 3rem;
+textarea {
+	color: #000;
 }
-
-input {
-	flex-grow: 1;
-}
-
 .spinner {
-	border: 4px solid #f3f3f3;
-	border-radius: 50%;
-	border-top: 4px solid #3498db;
 	width: 12px;
 	height: 12px;
-	animation: spin 2s linear infinite;
+	border: 2px solid transparent;
+	border-top-color: currentColor;
+	border-radius: 9999px;
+	animation: spin 1s linear infinite;
+	color: #1c64f2;
+	margin: 0 auto;
 }
 
 @keyframes spin {
@@ -199,9 +195,5 @@ input {
 	100% {
 		transform: rotate(360deg);
 	}
-}
-
-audio {
-	height: 100%;
 }
 </style>

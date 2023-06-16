@@ -1,5 +1,5 @@
 <template>
-	<div class="sidebar">
+	<div class="border-r border-gray-300 pr-4 overflow-y-auto h-screen">
 		<ThreadList />
 	</div>
 	<div class="content">
@@ -16,20 +16,13 @@ import Thread from './components/Thread.vue';
 import MessageForm from './components/MessageForm.vue';
 </script>
 
-<style scoped>
+<style>
 .app-grid {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
 	grid-gap: 1rem;
 	height: 100vh;
 	padding: 1rem;
-}
-
-.sidebar {
-	border-right: 1px solid #ddd;
-	padding-right: 1rem;
-	overflow-y: auto;
-	height: 100vh;
 }
 
 .content {
@@ -43,15 +36,5 @@ import MessageForm from './components/MessageForm.vue';
 .thread-container {
 	flex-grow: 1;
 	overflow-y: auto;
-}
-
-.btn {
-	@apply font-bold py-2 px-4 rounded;
-}
-.btn-blue {
-	@apply bg-blue-500 text-white;
-}
-.btn-blue:hover {
-	@apply bg-blue-700;
 }
 </style>
