@@ -9,6 +9,9 @@ const apiKey = process.env.ELEVENLABS_API_KEY;
 	const textInput = 'mozzy is cool';
 
 	const voices = (await getVoices(apiKey)).voices;
+	const voiceNames = voices.map((voice) => voice.name);
+	console.log('Available voices: ' + voiceNames.join(', '));
+	return;
 	// pick random voice
 	const voice = voices[Math.floor(Math.random() * voices.length)];
 
