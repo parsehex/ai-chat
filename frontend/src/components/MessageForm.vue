@@ -29,6 +29,7 @@ import { computed, ref, onUnmounted } from 'vue';
 import axios from 'axios';
 import { useThreadStore } from '@/stores/threads';
 import type { Message } from '@shared/types';
+import AudioPlayer from './AudioPlayer.vue';
 
 const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId);
