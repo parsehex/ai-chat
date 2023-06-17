@@ -16,13 +16,7 @@
 			TTS
 		</label>
 		<button class="btn" type="submit">Send</button>
-		<audio
-			class="opacity-75 hover:opacity-100"
-			ref="audio"
-			controls
-			:src="ttsUrl"
-			:style="{ visibility: ttsUrl ? 'visible' : 'hidden' }"
-		></audio>
+		<AudioPlayer v-if="ttsUrl" :ttsUrl="ttsUrl" />
 		<div
 			class="spinner border-t-2 border-indigo-500"
 			v-if="threadStore.apiCallInProgress"
