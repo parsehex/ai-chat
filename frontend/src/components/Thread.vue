@@ -1,16 +1,16 @@
 <template>
 	<div class="flex flex-col h-full">
-		<div class="sticky bg-gray-700 top-0 z-10">
+		<div class="sticky bg-gray-700 top-0 z-10 p-2">
 			<h2>{{ thread?.name }}</h2>
 			<button class="btn-err" v-if="thread" @click="clearHistory">
 				Clear History
 			</button>
-			<div class="system-prompt">
-				<label for="systemPrompt">System prompt:</label>
-				<input id="systemPrompt" v-model="systemPrompt" type="text" />
-				<button class="btn" @click="updateSystemPrompt">
-					Update System Prompt
-				</button>
+			<div class="flex">
+				<label class="flex-grow flex">
+					<span class="mr-1">System prompt:</span>
+					<input class="flex-grow" v-model="systemPrompt" type="text" />
+				</label>
+				<button class="btn" @click="updateSystemPrompt">Update</button>
 			</div>
 		</div>
 		<div
@@ -32,7 +32,7 @@
 					<span>
 						<AudioPlayer v-if="message.tts" :ttsUrl="`/tts/${message.tts}`" />
 						<button class="btn" @click="startEditing(message.id)">Edit</button>
-						<button class="btn" @click="deleteMessage(message.id)">
+						<button class="btn-err" @click="deleteMessage(message.id)">
 							Delete
 						</button>
 					</span>
@@ -147,13 +147,3 @@ function isEditing(messageId: string) {
 	return editingMessageId.value === messageId;
 }
 </script>
-
-<style scoped>
-.system-prompt {
-	display: flex;
-}
-
-input {
-	flex-grow: 1;
-}
-</style>
