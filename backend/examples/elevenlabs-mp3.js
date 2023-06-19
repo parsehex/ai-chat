@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { getVoice, getVoices, textToSpeech } from 'elevenlabs-node';
+import {
+	getVoiceSettings,
+	getVoice,
+	getVoices,
+	textToSpeech,
+} from 'elevenlabs-node';
 
 const apiKey = process.env.ELEVENLABS_API_KEY;
 
@@ -10,10 +15,15 @@ const apiKey = process.env.ELEVENLABS_API_KEY;
 
 	const voices = (await getVoices(apiKey)).voices;
 	const voiceNames = voices.map((voice) => voice.name);
-	console.log('Available voices: ' + voiceNames.join(', '));
+	const voice = voices.find((voice) => voice.name === 'Rachel');
+
+	// console.log('Available voices: ' + voiceNames.join(', '));
+	// Rachel, Domi, Bella, Antoni, Elli, Josh, Arnold, Adam, Sam
+
+	console.log(await getVoiceSettings(apiKey, voice.voice_id));
 	return;
 	// pick random voice
-	const voice = voices[Math.floor(Math.random() * voices.length)];
+	// const voice = voices[Math.floor(Math.random() * voices.length)];
 
 	textToSpeech(apiKey, voice.voice_id, fileName, textInput).then((res) => {
 		console.log('Used voice: ' + voice.voice_id, 'Name: ' + voice.name);

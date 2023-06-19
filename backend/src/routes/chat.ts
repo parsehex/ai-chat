@@ -7,6 +7,7 @@ import { Message, Thread } from '../../../shared/types.js';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
 import { convertTextToSpeech, getRandomVoice, getVoiceByName } from '../tts.js';
+import { Voice } from '../../../shared/typesElevenLabs.js';
 
 const router = Router();
 
@@ -55,7 +56,7 @@ router.route('/api/chat').post(async (req, res) => {
 		await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
 		if (useTTS) {
-			const voice = await getVoiceByName('Rachel');
+			const voice = (await getVoiceByName('Rachel')) as Voice;
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
 				responseObj.content
