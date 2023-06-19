@@ -18,14 +18,15 @@
 				}"
 				v-for="thread in threads"
 				:key="thread.id"
+				@click="selectThread(thread.id)"
 			>
-				<span
-					@click="selectThread(thread.id)"
-					:class="{ 'font-bold': isSelectedThread(thread.id) }"
-				>
+				<span :class="{ 'font-bold': isSelectedThread(thread.id) }">
 					{{ thread.name }}
 				</span>
-				<button class="btn-err ml-1" @click="deleteThread(thread.id)">
+				<button
+					class="btn-err ml-1"
+					@click.prevent.stop="deleteThread(thread.id)"
+				>
 					Delete
 				</button>
 			</li>
