@@ -26,6 +26,7 @@ export const useThreadStore = defineStore({
 		},
 		setCurrentThread(threadId: string) {
 			this.currentThreadId = threadId;
+			localStorage.setItem('selectedThread', threadId);
 		},
 		getThread(threadId: string) {
 			return this.threads.find((t) => t.id === threadId);

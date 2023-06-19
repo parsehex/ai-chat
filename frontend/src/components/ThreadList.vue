@@ -47,6 +47,10 @@ const isSelectedThread = computed(() => {
 let newThreadName = ref('');
 
 onMounted(async () => {
+	const lsSelectedThread = localStorage.getItem('selectedThread');
+	if (lsSelectedThread) {
+		store.setCurrentThread(lsSelectedThread);
+	}
 	await store.fetchThreads();
 	// console.log(threads);
 });
