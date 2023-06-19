@@ -1,10 +1,10 @@
 <template>
-	<div>
+	<span>
 		<button class="btn" type="button" @click="togglePlay">
 			{{ isPlaying ? 'Pause' : 'Play' }}
 		</button>
 		<audio class="hidden" ref="audio" controls :src="ttsUrl"></audio>
-	</div>
+	</span>
 </template>
 
 <script setup lang="ts">
