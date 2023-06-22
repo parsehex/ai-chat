@@ -1,19 +1,35 @@
 <template>
 	<div>
 		<h2>Threads</h2>
-		<form @submit.prevent="createThread">
-			<input
-				v-model="newThreadName"
-				type="text"
-				placeholder="New thread name"
-			/>
-		</form>
+		<div>
+			<form class="p-1 mb-1" @submit.prevent="createThread">
+				<input
+					class="p-1 border-2 border-gray-300 rounded-md"
+					v-model="newThreadName"
+					type="text"
+					placeholder="New thread name"
+				/>
 				<button class="btn-succ" type="submit" title="Create thread">
 					<font-awesome-icon icon="plus" />
 				</button>
+			</form>
+			<select
+				class="p-1 border-2 border-gray-300 rounded-md text-black"
+				v-model="selectedVoice"
+			>
+				<option
+					v-for="voice in ttsVoices"
+					:key="voice.voice_id"
+					:value="voice.voice_id"
+				>
+					{{ voice.name }}
+				</option>
+			</select>
+		</div>
 		<ul>
 			<li
 				:class="{
+					'p-1': true,
 					flex: true,
 					'justify-between': true,
 					'bg-gray-500': isSelectedThread(thread.id),
@@ -40,12 +56,19 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useThreadStore } from '@/stores/threads';
+import { getTTSVoices } from '@/api';
+import type { Voice } from '@shared/typesElevenLabs';
 
 const store = useThreadStore();
 const threads = computed(() => store.$state.threads);
 const currentThread = computed(() => store.$state.currentThreadId);
 const isSelectedThread = computed(() => {
 	return (threadId: string) => threadId === currentThread.value;
+});
+const ttsVoices = ref([] as Voice[]);
+const selectedVoice = computed({
+	get: () => store.$state.ttsVoiceId as string,
+	set: (value: string) => store.setTTSVoiceId(value),
 });
 
 let newThreadName = ref('');
@@ -55,8 +78,12 @@ onMounted(async () => {
 	if (lsSelectedThread) {
 		store.setCurrentThread(lsSelectedThread);
 	}
+	const lsSelectedVoice = localStorage.getItem('ttsVoiceId');
+	if (lsSelectedVoice) {
+		store.setTTSVoiceId(lsSelectedVoice);
+	}
 	await store.fetchThreads();
-	// console.log(threads);
+	ttsVoices.value = await getTTSVoices();
 });
 
 async function createThread() {
