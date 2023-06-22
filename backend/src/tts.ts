@@ -1,5 +1,6 @@
 import * as ElevenLabs from 'elevenlabs-node';
 import path from 'path';
+import say from 'say';
 import fs from 'fs-extra';
 import { TTS_PATH } from './const.js';
 import { Voice } from '../../shared/typesElevenLabs.js';
@@ -7,11 +8,34 @@ const API_KEY = process.env.ELEVENLABS_API_KEY;
 
 let voices: Voice[] = [];
 
-export const getVoices = async (): Promise<Voice[] | null> => {
+function getSayVoices(): Promise<string[]> {
+	return new Promise((resolve, reject) => {
+		// @ts-ignore: the type definition is wrong, callback does actually take 2 args
+		say.getInstalledVoices((err, voices) => {
+			if (err) reject(err);
+			resolve(voices);
+		});
+	});
+}
+async function getFixedSayVoices(): Promise<Voice[]> {
+	const voices = await getSayVoices();
+	return voices.map((voice) => {
+		return {
+			voice_id: 'saytts-' + voice.replace(/ /g, '_'),
+			name: voice,
+		} as any;
+	});
+}
+
+export const getVoices = async (
+	elevenlabsOnly = false
+): Promise<Voice[] | null> => {
 	try {
 		const response = await ElevenLabs.getVoices(API_KEY);
 		const { voices } = response;
-		return voices;
+		if (elevenlabsOnly) return voices;
+		const sayVoices = await getFixedSayVoices();
+		return [...voices, ...sayVoices];
 	} catch (error) {
 		console.error('Error in getting voices:', error);
 		return null;
@@ -30,6 +54,7 @@ export const getVoiceById = async (voiceId: string): Promise<Voice | null> => {
 		console.error('Error in getting voice by id:', voiceId);
 		return null;
 	}
+	return voice;
 };
 
 export const getVoiceByName = async (
@@ -40,6 +65,7 @@ export const getVoiceByName = async (
 		console.error('Error in getting voice by name:', voiceName);
 		return null;
 	}
+	return voice;
 };
 
 export const convertTextToSpeech = async (
@@ -49,6 +75,11 @@ export const convertTextToSpeech = async (
 	try {
 		const fileName = `${Date.now()}.mp3`;
 		const filePath = path.join(TTS_PATH, fileName);
+		if (voiceId.startsWith('saytts')) {
+			const voiceName = voiceId.replace('saytts-', '').replace(/_/g, ' ');
+			await sayTTSExport(text, voiceName, filePath);
+			return fileName;
+		}
 		// (apiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId)
 		await ElevenLabs.textToSpeech(API_KEY, voiceId, filePath, text, 0.25);
 		return fileName;
@@ -57,6 +88,15 @@ export const convertTextToSpeech = async (
 		throw error;
 	}
 };
+
+function sayTTSExport(text: string, voiceName: string, filePath: string) {
+	return new Promise((resolve, reject) => {
+		say.export(text, voiceName, 1, filePath, (err) => {
+			if (err) reject(err);
+			resolve(filePath);
+		});
+	});
+}
 
 (async () => {
 	await fs.ensureDir(TTS_PATH);
