@@ -31,9 +31,19 @@
 					{{ message.role }}: {{ message.content }}
 					<span>
 						<AudioPlayer v-if="message.tts" :ttsUrl="`/tts/${message.tts}`" />
-						<button class="btn" @click="startEditing(message.id)">Edit</button>
-						<button class="btn-err" @click="deleteMessage(message.id)">
-							Delete
+						<button
+							class="btn"
+							@click="startEditing(message.id)"
+							title="Edit message"
+						>
+							<font-awesome-icon icon="pen-to-square" />
+						</button>
+						<button
+							class="btn-err"
+							@click="deleteMessage(message.id)"
+							title="Delete message"
+						>
+							<font-awesome-icon icon="trash" />
 						</button>
 					</span>
 				</div>

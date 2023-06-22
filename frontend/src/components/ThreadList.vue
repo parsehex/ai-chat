@@ -7,8 +7,10 @@
 				type="text"
 				placeholder="New thread name"
 			/>
-			<button class="btn-succ" type="submit">Create Thread</button>
 		</form>
+				<button class="btn-succ" type="submit" title="Create thread">
+					<font-awesome-icon icon="plus" />
+				</button>
 		<ul>
 			<li
 				:class="{
@@ -26,8 +28,9 @@
 				<button
 					class="btn-err ml-1"
 					@click.prevent.stop="deleteThread(thread.id)"
+					title="Delete thread"
 				>
-					Delete
+					<font-awesome-icon icon="trash" />
 				</button>
 			</li>
 		</ul>

@@ -1,7 +1,16 @@
 <template>
 	<span>
-		<button class="btn" type="button" @click="togglePlay">
-			{{ isPlaying ? 'Pause' : 'Play' }}
+		<button
+			class="btn"
+			type="button"
+			@click="playToggle"
+			:disabled="!audioReady"
+			title="Play audio"
+		>
+			<font-awesome-icon
+				:icon="isPlaying ? 'pause' : 'play'"
+				:spin="!audioReady"
+			/>
 		</button>
 		<audio class="hidden" ref="audio" controls :src="ttsUrl"></audio>
 	</span>
@@ -20,10 +29,23 @@ const isPlaying = ref(false);
 watchEffect(() => {
 	if (audio.value && props.ttsUrl) {
 		audio.value.src = props.ttsUrl;
+defineExpose({
+	playToggle,
+	play: () => {
+		if (!props.ttsUrl || !audio.value || !audio.value.paused) {
+			return;
+		}
+		if (audioReady.value) {
+			audio.value.play();
+			isPlaying.value = true;
+		}
+	},
+});
+
 	}
 });
 
-const togglePlay = () => {
+function playToggle() {
 	if (!props.ttsUrl || !audio.value) {
 		return;
 	}

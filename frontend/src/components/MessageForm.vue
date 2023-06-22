@@ -4,8 +4,16 @@
 		v-if="threadId"
 		@submit.prevent="sendMessage"
 	>
-		<button class="btn" type="button" @click="toggleRecording">
-			{{ isRecording ? 'Stop' : 'Record' }}
+		<button
+			class="btn"
+			type="button"
+			@click="toggleRecording"
+			:title="isRecording ? 'Stop recording' : 'Start recording'"
+		>
+			<font-awesome-icon
+				:icon="isRecording ? 'stop-circle' : 'microphone'"
+				:spin="isRecording"
+			/>
 		</button>
 		<textarea
 			class="flex-grow p-2 border-2 border-gray-300 rounded-md"
