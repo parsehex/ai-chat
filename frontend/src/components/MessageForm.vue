@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onUnmounted } from 'vue';
-import axios from 'axios';
+import * as api from '@/api';
 import { useThreadStore } from '@/stores/threads';
 import type { Message } from '@shared/types';
 import AudioPlayer from './AudioPlayer.vue';
@@ -69,12 +69,11 @@ let mediaRecorder: MediaRecorder | null = null;
 
 const sendAudio = async () => {
 	if (recordedAudio.value) {
-		const formData = new FormData();
-		formData.append('audio', recordedAudio.value, 'audio.webm');
 		try {
-			const res = await axios.post('/api/transcribe', formData);
-			if (res.data && res.data.transcription) {
-				message.value = res.data.transcription;
+			const url = await api.getTranscription(recordedAudio.value);
+			ttsUrl.value = url.transcription;
+			if (useTTS.value) {
+				sendMessage();
 			}
 		} catch (error) {
 			console.error('Failed to transcribe message:', error);
@@ -141,20 +140,23 @@ const sendMessage = async () => {
 			message: newMessage,
 		});
 		try {
-			const updatedThread = await axios.post('/api/chat', {
-				message: newMessage.content,
-				id: threadId.value,
-				tts: {
-					enabled: useTTS.value,
-					voice: ttsVoice.value,
-				},
-			});
-			if (updatedThread.data) {
-				threadStore.setThread(updatedThread.data.thread);
-				if (updatedThread.data.ttsResponse) {
-					ttsUrl.value = `/tts/${updatedThread.data.ttsResponse}`;
-				} else {
-					ttsUrl.value = '';
+			const updatedThread = await api.sendMessage(
+				threadId.value,
+				newMessage.content,
+				useTTS.value,
+				ttsVoice.value || ''
+			);
+			if (updatedThread) {
+				threadStore.setThread(updatedThread);
+				// does last message have tts?
+				if (updatedThread.messages.length > 0) {
+					const lastMessage =
+						updatedThread.messages[updatedThread.messages.length - 1];
+					if (lastMessage.tts) {
+						ttsUrl.value = lastMessage.tts;
+					} else {
+						ttsUrl.value = '';
+					}
 				}
 			}
 		} catch (error: any) {

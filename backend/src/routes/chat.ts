@@ -3,21 +3,15 @@ import fs from 'fs-extra';
 import { type ChatCompletionRequestMessage } from 'openai';
 import path from 'path';
 import { v4 } from 'uuid';
+import { Voice } from '../../../shared/typesElevenLabs.js';
 import { Message, Thread } from '../../../shared/types.js';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
-import {
-	convertTextToSpeech,
-	getRandomVoice,
-	getVoiceById,
-	getVoiceByName,
-	getVoices,
-} from '../tts.js';
-import { Voice } from '../../../shared/typesElevenLabs.js';
+import { convertTextToSpeech, getVoiceById, getVoices } from '../tts.js';
 
 const router = Router();
 
-router.route('/api/chat').post(async (req, res) => {
+router.post('/api/chat', async (req, res) => {
 	const { message, id, tts } = req.body;
 
 	if (!id || !message) {
@@ -68,7 +62,8 @@ router.route('/api/chat').post(async (req, res) => {
 			const voice = (await getVoiceById(tts.voice)) as Voice;
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
-				responseObj.content
+				responseObj.content,
+				'chat'
 			);
 
 			aiMessage.tts = ttsResponse;

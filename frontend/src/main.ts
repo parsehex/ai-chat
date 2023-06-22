@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+	faComment,
 	faMicrophone,
 	faPause,
 	faPenToSquare,
@@ -20,6 +21,7 @@ import App from './App.vue';
 const app = createApp(App);
 
 library.add(
+	faComment,
 	faMicrophone,
 	faPause,
 	faPenToSquare,

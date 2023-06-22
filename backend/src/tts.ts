@@ -70,19 +70,21 @@ export const getVoiceByName = async (
 
 export const convertTextToSpeech = async (
 	voiceId: string,
-	text: string
+	text: string,
+	type: 'chat' | 'tts'
 ): Promise<string> => {
 	try {
 		const fileName = `${Date.now()}.mp3`;
-		const filePath = path.join(TTS_PATH, fileName);
+		const filePath = path.join(TTS_PATH, type, fileName);
+		console.log(filePath);
 		if (voiceId.startsWith('saytts')) {
 			const voiceName = voiceId.replace('saytts-', '').replace(/_/g, ' ');
 			await sayTTSExport(text, voiceName, filePath);
-			return fileName;
+			return `/tts/${type}/${fileName}`;
 		}
 		// (apiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId)
 		await ElevenLabs.textToSpeech(API_KEY, voiceId, filePath, text, 0.25);
-		return fileName;
+		return `/tts/${type}/${fileName}`;
 	} catch (error) {
 		console.error('Error in converting text to speech:', error);
 		throw error;
@@ -100,6 +102,8 @@ function sayTTSExport(text: string, voiceName: string, filePath: string) {
 
 (async () => {
 	await fs.ensureDir(TTS_PATH);
+	await fs.ensureDir(path.join(TTS_PATH, 'chat'));
+	await fs.ensureDir(path.join(TTS_PATH, 'tts'));
 
 	voices = (await getVoices()) || [];
 })();

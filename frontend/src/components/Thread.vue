@@ -34,9 +34,20 @@
 					v-if="!isEditing(message.id)"
 					class="flex items-center justify-between"
 				>
-					{{ message.role }}: {{ message.content }}
-					<span>
-						<AudioPlayer v-if="message.tts" :ttsUrl="`/tts/${message.tts}`" />
+					<div class="inline-flex flex-col">
+						<span class="text-sm cursor-default">{{ message.role }}</span>
+						<span>{{ message.content }}</span>
+					</div>
+					<div class="inline-flex">
+						<AudioPlayer v-if="message.tts" :ttsUrl="message.tts" />
+						<button
+							v-else-if="message.role !== 'user'"
+							class="btn"
+							@click="generateTTS(message.id)"
+							title="Generate TTS"
+						>
+							<font-awesome-icon icon="comment" />
+						</button>
 						<button
 							class="btn"
 							@click="startEditing(message.id)"

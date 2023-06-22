@@ -116,5 +116,18 @@ export const useThreadStore = defineStore({
 				console.error('Failed to delete message from thread:', error);
 			}
 		},
+		async generateTTSFromMessage(threadId: string, messageId: string) {
+			if (!this.ttsVoiceId) return;
+			try {
+				const thread = await api.ttsFromMessage(
+					threadId,
+					messageId,
+					this.ttsVoiceId
+				);
+				this.setThread(thread);
+			} catch (error: any) {
+				console.error('Failed to generate TTS from message:', error);
+			}
+		},
 	},
 });
