@@ -19,7 +19,6 @@
 			class="flex-grow p-2 border-2 border-gray-300 rounded-md"
 			v-model="message"
 		></textarea>
-		<AudioPlayer v-if="ttsUrl" :ttsUrl="ttsUrl" />
 		<div class="inline-flex flex-col items-center">
 			<span>Send:</span>
 			<button class="btn" type="submit">No TTS</button>
@@ -36,6 +35,12 @@
 				TTS
 			</button>
 		</div>
+		<AudioPlayer
+			ref="audio"
+			v-if="ttsUrl"
+			@audioReady="onAudioReady"
+			:ttsUrl="ttsUrl"
+		/>
 		<div
 			class="spinner border-t-2 border-indigo-500"
 			v-if="threadStore.apiCallInProgress"
@@ -56,21 +61,18 @@ const ttsVoice = computed(() => threadStore.$state.ttsVoiceId);
 const message = ref('');
 const useTTS = ref(false);
 const ttsUrl = ref('');
-const audio = ref(null as HTMLAudioElement | null);
+const audio = ref(null as typeof AudioPlayer | null);
 const isRecording = ref(false);
 const recordedAudio = ref(null as Blob | null);
 
 let mediaRecorder: MediaRecorder | null = null;
 
 const sendAudio = async () => {
-	console.log('Uploading audio to server...');
 	if (recordedAudio.value) {
-		console.log(typeof recordedAudio.value);
 		const formData = new FormData();
 		formData.append('audio', recordedAudio.value, 'audio.webm');
 		try {
 			const res = await axios.post('/api/transcribe', formData);
-			console.log('Transcription response:', res.data);
 			if (res.data && res.data.transcription) {
 				message.value = res.data.transcription;
 			}
@@ -88,14 +90,12 @@ const toggleRecording = async () => {
 		mediaRecorder = new MediaRecorder(stream);
 		const chunks: Blob[] = [];
 
-		// push to chunks on 'dataavailable'
 		mediaRecorder.addEventListener('dataavailable', (e) => {
 			if (e.data.size > 0) {
 				chunks.push(e.data);
 			}
 		});
 
-		// save blob to ref on 'stop'
 		mediaRecorder.addEventListener('stop', () => {
 			recordedAudio.value = new Blob(chunks, { type: 'audio/webm' });
 			sendAudio();
@@ -109,23 +109,12 @@ const toggleRecording = async () => {
 	}
 };
 
-const pollTTS = async (url: string) => {
-	return new Promise<void>((resolve, reject) => {
-		const interval = setInterval(async () => {
-			try {
-				const response = await axios.head(url);
-				if (response.status === 200) {
-					clearInterval(interval);
-					resolve();
-				}
-			} catch (error: any) {
-				if (error.response && error.response.status !== 404) {
-					clearInterval(interval);
-					reject(error);
-				}
-			}
-		}, 1000);
-	});
+const onAudioReady = async () => {
+	setTimeout(() => {
+		if (audio.value) {
+			audio.value.play();
+		}
+	}, 0);
 };
 
 const sendMessage = async () => {
@@ -135,7 +124,6 @@ const sendMessage = async () => {
 			mediaRecorder.stop();
 			isRecording.value = false;
 		}
-		//
 		return;
 	}
 
@@ -164,13 +152,7 @@ const sendMessage = async () => {
 			if (updatedThread.data) {
 				threadStore.setThread(updatedThread.data.thread);
 				if (updatedThread.data.ttsResponse) {
-					await pollTTS(`/tts/${updatedThread.data.ttsResponse}`);
 					ttsUrl.value = `/tts/${updatedThread.data.ttsResponse}`;
-					setTimeout(() => {
-						if (audio.value) {
-							audio.value.play();
-						}
-					}, 1000);
 				} else {
 					ttsUrl.value = '';
 				}
@@ -191,9 +173,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-textarea {
-	color: #000;
-}
 .spinner {
 	width: 12px;
 	height: 12px;
