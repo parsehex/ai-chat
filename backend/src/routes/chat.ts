@@ -6,19 +6,28 @@ import { v4 } from 'uuid';
 import { Message, Thread } from '../../../shared/types.js';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
-import { convertTextToSpeech, getRandomVoice, getVoiceByName } from '../tts.js';
+import {
+	convertTextToSpeech,
+	getRandomVoice,
+	getVoiceById,
+	getVoiceByName,
+	getVoices,
+} from '../tts.js';
 import { Voice } from '../../../shared/typesElevenLabs.js';
 
 const router = Router();
 
 router.route('/api/chat').post(async (req, res) => {
-	const { message, id, useTTS } = req.body;
+	const { message, id, tts } = req.body;
 
 	if (!id || !message) {
 		return res
 			.status(400)
 			.json({ error: 'Thread id and a message is required' });
 	}
+
+	let useTTS = false;
+	if (tts) useTTS = tts.enabled;
 
 	try {
 		const threadFilePath = path.join(THREADS_PATH, `${id}.json`);
@@ -56,7 +65,7 @@ router.route('/api/chat').post(async (req, res) => {
 		await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
 		if (useTTS) {
-			const voice = (await getVoiceByName('Rachel')) as Voice;
+			const voice = (await getVoiceById(tts.voice)) as Voice;
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
 				responseObj.content
@@ -73,6 +82,16 @@ router.route('/api/chat').post(async (req, res) => {
 		}
 
 		res.json({ thread });
+	} catch (err: any) {
+		console.log(err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
+router.get('/api/voices', async (req, res) => {
+	try {
+		const voices = await getVoices();
+		res.json({ voices });
 	} catch (err: any) {
 		console.log(err);
 		res.status(500).json({ error: err.message });

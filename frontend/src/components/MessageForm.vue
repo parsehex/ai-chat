@@ -19,12 +19,23 @@
 			class="flex-grow p-2 border-2 border-gray-300 rounded-md"
 			v-model="message"
 		></textarea>
-		<label class="text-gray-600">
-			<input class="mr-2" type="checkbox" v-model="useTTS" />
-			TTS
-		</label>
-		<button class="btn" type="submit">Send</button>
 		<AudioPlayer v-if="ttsUrl" :ttsUrl="ttsUrl" />
+		<div class="inline-flex flex-col items-center">
+			<span>Send:</span>
+			<button class="btn" type="submit">No TTS</button>
+			<button
+				class="btn"
+				type="button"
+				@click="
+					() => {
+						useTTS = true;
+						sendMessage();
+					}
+				"
+			>
+				TTS
+			</button>
+		</div>
 		<div
 			class="spinner border-t-2 border-indigo-500"
 			v-if="threadStore.apiCallInProgress"
@@ -41,6 +52,7 @@ import AudioPlayer from './AudioPlayer.vue';
 
 const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId);
+const ttsVoice = computed(() => threadStore.$state.ttsVoiceId);
 const message = ref('');
 const useTTS = ref(false);
 const ttsUrl = ref('');
@@ -144,7 +156,10 @@ const sendMessage = async () => {
 			const updatedThread = await axios.post('/api/chat', {
 				message: newMessage.content,
 				id: threadId.value,
-				useTTS: useTTS.value,
+				tts: {
+					enabled: useTTS.value,
+					voice: ttsVoice.value,
+				},
 			});
 			if (updatedThread.data) {
 				threadStore.setThread(updatedThread.data.thread);

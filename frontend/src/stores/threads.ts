@@ -8,8 +8,17 @@ export const useThreadStore = defineStore({
 		threads: [] as Thread[],
 		currentThreadId: '',
 		apiCallInProgress: false,
+		ttsVoiceId: null as string | null,
 	}),
 	actions: {
+		setTTSVoiceId(voiceId: string | null) {
+			this.ttsVoiceId = voiceId;
+			localStorage.setItem('ttsVoiceId', voiceId || '');
+		},
+		setCurrentThread(threadId: string) {
+			this.currentThreadId = threadId;
+			localStorage.setItem('selectedThread', threadId);
+		},
 		setThreads(threads: Thread[]) {
 			this.threads = threads;
 		},
@@ -23,10 +32,6 @@ export const useThreadStore = defineStore({
 			if (threadIndex !== -1) {
 				this.threads[threadIndex] = thread;
 			}
-		},
-		setCurrentThread(threadId: string) {
-			this.currentThreadId = threadId;
-			localStorage.setItem('selectedThread', threadId);
 		},
 		getThread(threadId: string) {
 			return this.threads.find((t) => t.id === threadId);
@@ -61,7 +66,7 @@ export const useThreadStore = defineStore({
 			try {
 				const thread = await api.createThread(name);
 				this.threads.push(thread);
-				this.currentThreadId = thread.id;
+				this.setCurrentThread(thread.id);
 			} catch (error: any) {
 				console.error('Failed to create thread:', error);
 			}

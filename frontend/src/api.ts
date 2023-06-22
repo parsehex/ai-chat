@@ -1,3 +1,4 @@
+import type { Voice } from '@shared/typesElevenLabs';
 import axios from 'axios';
 
 export const getThreads = async () => {
@@ -56,4 +57,9 @@ export const deleteMessageFromThread = async (
 		`/api/threads/${threadId}/messages/${messageId}`
 	);
 	return response.data;
+};
+
+export const getTTSVoices = async () => {
+	const response = await axios.get('/api/voices');
+	return response.data.voices as Voice[];
 };
