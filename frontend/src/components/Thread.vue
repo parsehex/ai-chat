@@ -1,14 +1,20 @@
 <template>
 	<div class="flex flex-col h-full">
 		<div class="sticky bg-gray-700 top-0 z-10 p-2">
-			<h2>{{ thread?.name }}</h2>
+			<h2 class="text-xl">
+				{{ thread?.name }}
+			</h2>
 			<button class="btn-err" v-if="thread" @click="clearHistory">
 				Clear History
 			</button>
 			<form @submit.prevent="updateSystemPrompt" class="flex">
 				<label class="flex-grow flex">
 					<span class="mr-1">System prompt:</span>
-					<input class="flex-grow" v-model="systemPrompt" type="text" />
+					<input
+						class="flex-grow border-2 border-gray-300 rounded-md px-1"
+						v-model="systemPrompt"
+						type="text"
+					/>
 				</label>
 				<button class="btn" @click="updateSystemPrompt">Update</button>
 			</form>

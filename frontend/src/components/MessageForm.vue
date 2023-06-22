@@ -16,7 +16,7 @@
 			/>
 		</button>
 		<textarea
-			class="flex-grow p-2 border-2 border-gray-300 rounded-md"
+			class="flex-grow p-2 border-2 border-gray-300 text-black rounded-md mx-1"
 			v-model="message"
 		></textarea>
 		<div class="inline-flex flex-col items-center">
