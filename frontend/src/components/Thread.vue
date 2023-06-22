@@ -62,7 +62,7 @@
 						>
 							<font-awesome-icon icon="trash" />
 						</button>
-					</span>
+					</div>
 				</div>
 				<form
 					v-else
@@ -167,18 +167,19 @@ async function deleteMessage(id: string) {
 	});
 }
 
-// A method to start editing a message
 function startEditing(messageId: string) {
 	editingMessageId.value = messageId;
 }
 
-// A method to stop editing a message
 function stopEditing() {
 	editingMessageId.value = '';
 }
 
-// A method to check if a message is being edited
 function isEditing(messageId: string) {
 	return editingMessageId.value === messageId;
+}
+
+function generateTTS(messageId: string) {
+	threadStore.generateTTSFromMessage(threadId.value, messageId);
 }
 </script>

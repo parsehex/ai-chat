@@ -19,6 +19,7 @@
 			:src="realTTSUrl"
 			@playing="onPlay"
 			@pause="onPause"
+			@ended="onPause"
 		></audio>
 	</span>
 </template>
@@ -30,13 +31,13 @@ import axios from 'axios';
 const props = defineProps({
 	ttsUrl: String,
 });
+const realTTSUrl = ref('');
 
 const emits = defineEmits(['audioReady']);
 
 const audio = ref(null as HTMLAudioElement | null);
 const isPlaying = ref(false);
 const audioReady = ref(false);
-const realTTSUrl = ref('');
 
 let interval: number | null = null;
 
