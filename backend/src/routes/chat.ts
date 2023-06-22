@@ -70,7 +70,6 @@ router.route('/api/chat').post(async (req, res) => {
 				voice.voice_id,
 				responseObj.content
 			);
-			// console.log('Voice:', voice.name, 'TTS Response:', ttsResponse);
 
 			aiMessage.tts = ttsResponse;
 			await fs.writeFile(threadFilePath, JSON.stringify(thread));
