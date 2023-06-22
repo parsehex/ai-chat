@@ -5,13 +5,13 @@
 			<button class="btn-err" v-if="thread" @click="clearHistory">
 				Clear History
 			</button>
-			<div class="flex">
+			<form @submit.prevent="updateSystemPrompt" class="flex">
 				<label class="flex-grow flex">
 					<span class="mr-1">System prompt:</span>
 					<input class="flex-grow" v-model="systemPrompt" type="text" />
 				</label>
 				<button class="btn" @click="updateSystemPrompt">Update</button>
-			</div>
+			</form>
 		</div>
 		<div
 			ref="messageContainer"
@@ -47,8 +47,12 @@
 						</button>
 					</span>
 				</div>
-				<div v-else class="flex">
-					<!-- editing -->
+				<form
+					v-else
+					@submit.prevent="updateMessage(message.id, message.content)"
+					class="flex"
+				>
+					<!-- editing message -->
 					<input class="flex-grow" v-model="message.content" />
 					<button
 						class="btn"
@@ -56,7 +60,7 @@
 					>
 						Update
 					</button>
-				</div>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -105,7 +109,11 @@ watchEffect(() => {
 });
 
 async function updateSystemPrompt() {
-	if (threadId.value) {
+	if (
+		threadId.value &&
+		systemPrompt.value &&
+		systemPrompt.value !== thread.value?.systemPrompt
+	) {
 		await threadStore.updateSystemPrompt(threadId.value, systemPrompt.value);
 	}
 }
