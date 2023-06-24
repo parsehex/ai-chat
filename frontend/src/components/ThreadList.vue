@@ -1,6 +1,6 @@
 <template>
-	<div>
 		<h2>Threads</h2>
+	<div class="flex flex-col h-full overflow-hidden">
 		<div>
 			<form class="p-1 mb-1" @submit.prevent="createThread">
 				<input
@@ -26,7 +26,7 @@
 				</option>
 			</select>
 		</div>
-		<ul>
+		<ul class="flex-grow list-none overflow-y-auto pb-7">
 			<li
 				:class="{
 					'p-1': true,

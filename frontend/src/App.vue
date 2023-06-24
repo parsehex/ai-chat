@@ -1,6 +1,6 @@
 <template>
-	<div class="border-r border-gray-300 pr-4 overflow-y-auto h-screen">
 		<ThreadList />
+	<div class="border-r border-gray-300 pr-4 h-screen">
 	</div>
 	<div class="content">
 		<div class="thread-container">

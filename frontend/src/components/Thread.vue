@@ -1,5 +1,5 @@
 <template>
-	<div class="flex flex-col h-full">
+	<div class="thread-container flex-grow flex flex-col h-full">
 		<div class="sticky bg-gray-700 top-0 z-10 p-2">
 			<h2 class="text-xl">
 				{{ thread?.name }}
