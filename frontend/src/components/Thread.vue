@@ -4,7 +4,7 @@
 			<h2 class="text-xl">
 				{{ thread?.name }}
 			</h2>
-			<button class="btn-err" v-if="thread" @click="clearHistory">
+			<button class="btn-err outline" v-if="thread" @click="clearHistory">
 				Clear History
 			</button>
 			<form @submit.prevent="updateSystemPrompt" class="flex">
@@ -26,7 +26,7 @@
 			<div v-if="!thread">No thread selected</div>
 			<div
 				v-if="thread"
-				class="hover:bg-gray-400 hover:text-gray-800 transition-colors duration-200 p-1"
+				class="hover:bg-gray-800 p-1"
 				v-for="message in thread.messages"
 				:key="message.id"
 			>
@@ -35,7 +35,10 @@
 					class="flex items-center justify-between"
 				>
 					<div class="inline-flex flex-col">
-						<span class="text-sm cursor-default">{{ message.role }}</span>
+						<span
+							class="text-sm cursor-default select-none underline dark:text-gray-400"
+							>{{ message.role }}</span
+						>
 						<span>{{ message.content }}</span>
 					</div>
 					<div class="inline-flex">

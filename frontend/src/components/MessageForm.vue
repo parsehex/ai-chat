@@ -5,7 +5,7 @@
 		@submit.prevent="sendMessage"
 	>
 		<button
-			class="btn"
+			class="btn outline"
 			type="button"
 			@click="toggleRecording"
 			:title="isRecording ? 'Stop recording' : 'Start recording'"
@@ -21,9 +21,9 @@
 		></textarea>
 		<div class="inline-flex flex-col items-center">
 			<span>Send:</span>
-			<button class="btn" type="submit">No TTS</button>
+			<button class="btn outline" type="submit">No TTS</button>
 			<button
-				class="btn"
+				class="btn outline"
 				type="button"
 				@click="
 					() => {

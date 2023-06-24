@@ -100,18 +100,3 @@ function selectThread(threadId: string) {
 	store.setCurrentThread(threadId);
 }
 </script>
-
-<style scoped>
-ul {
-	list-style: none;
-	padding: 0;
-}
-
-/* .active {
-	font-weight: bold;
-}
-
-button.delete {
-	margin-left: 1rem;
-} */
-</style>
