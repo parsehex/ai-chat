@@ -1,9 +1,5 @@
 <template>
-	<form
-		class="flex container p-1"
-		v-if="threadId"
-		@submit.prevent="sendMessage"
-	>
+	<form class="flex container" v-if="threadId" @submit.prevent="sendMessage">
 		<button
 			class="btn outline"
 			type="button"
@@ -15,26 +11,12 @@
 				:spin="isRecording"
 			/>
 		</button>
-		<textarea
-			class="flex-grow p-2 border-2 border-gray-300 text-black rounded-md mx-1"
+		<FlexibleTextInput
+			class="flex-grow p-1 border-2 border-gray-300 text-black rounded-md mr-1"
 			v-model="message"
-		></textarea>
-		<div class="inline-flex flex-col items-center">
-			<span>Send:</span>
-			<button class="btn outline" type="submit">No TTS</button>
-			<button
-				class="btn outline"
-				type="button"
-				@click="
-					() => {
-						useTTS = true;
-						sendMessage();
-					}
-				"
-			>
-				TTS
-			</button>
-		</div>
+			:hideButton="true"
+		/>
+		<button class="btn outline" type="submit">Send</button>
 		<AudioPlayer
 			ref="audio"
 			v-if="ttsUrl"
@@ -51,13 +33,13 @@
 <script setup lang="ts">
 import { computed, ref, onUnmounted } from 'vue';
 import * as api from '@/api';
-import { useThreadStore } from '@/stores/threads';
+import { useStore } from '@/store';
 import type { Message } from '@shared/types';
 import AudioPlayer from './AudioPlayer.vue';
+import FlexibleTextInput from './FlexibleTextInput.vue';
 
-const threadStore = useThreadStore();
+const threadStore = useStore();
 const threadId = computed(() => threadStore.$state.currentThreadId);
-const ttsVoice = computed(() => threadStore.$state.ttsVoiceId);
 const message = ref('');
 const useTTS = ref(false);
 const ttsUrl = ref('');
@@ -142,9 +124,7 @@ const sendMessage = async () => {
 		try {
 			const updatedThread = await api.sendMessage(
 				threadId.value,
-				newMessage.content,
-				useTTS.value,
-				ttsVoice.value || ''
+				newMessage.content
 			);
 			if (updatedThread) {
 				threadStore.setThread(updatedThread);
@@ -196,3 +176,4 @@ onUnmounted(() => {
 	}
 }
 </style>
+@/stores

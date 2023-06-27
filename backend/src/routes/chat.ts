@@ -22,16 +22,13 @@ router.get('/api/chat/models', async (req, res) => {
 });
 
 router.post('/api/chat', async (req, res) => {
-	const { message, id, tts } = req.body;
+	const { message, id } = req.body;
 
 	if (!id || !message) {
 		return res
 			.status(400)
 			.json({ error: 'Thread id and a message is required' });
 	}
-
-	let useTTS = false;
-	if (tts) useTTS = tts.enabled;
 
 	try {
 		const threadFilePath = path.join(THREADS_PATH, `${id}.json`);
@@ -49,7 +46,8 @@ router.post('/api/chat', async (req, res) => {
 		const chatResponse = await sendMessage(
 			thread.systemPrompt,
 			history,
-			message
+			message,
+			thread.chatModel
 		);
 		const responseObj = chatResponse.data.choices[0].message;
 
@@ -66,10 +64,8 @@ router.post('/api/chat', async (req, res) => {
 		thread.messages.push(userMessage);
 		thread.messages.push(aiMessage);
 
-		await fs.writeFile(threadFilePath, JSON.stringify(thread));
-
-		if (useTTS) {
-			const voice = (await getVoiceById(tts.voice)) as Voice;
+		if (thread.ttsEnabled) {
+			const voice = (await getVoiceById(thread.ttsVoiceId)) as Voice;
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
 				responseObj.content,
@@ -77,25 +73,10 @@ router.post('/api/chat', async (req, res) => {
 			);
 
 			aiMessage.tts = ttsResponse;
-			await fs.writeFile(threadFilePath, JSON.stringify(thread));
-
-			return res.json({
-				thread,
-				ttsResponse,
-			});
 		}
+		await fs.writeFile(threadFilePath, JSON.stringify(thread));
 
 		res.json({ thread });
-	} catch (err: any) {
-		console.log(err);
-		res.status(500).json({ error: err.message });
-	}
-});
-
-router.get('/api/voices', async (req, res) => {
-	try {
-		const voices = await getVoices();
-		res.json({ voices });
 	} catch (err: any) {
 		console.log(err);
 		res.status(500).json({ error: err.message });

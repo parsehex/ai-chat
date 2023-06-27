@@ -1,6 +1,6 @@
 <template>
-		<h2>Threads</h2>
 	<div class="flex flex-col h-full overflow-hidden">
+		<h2>Threads</h2>
 		<div>
 			<form class="p-1 mb-1" @submit.prevent="createThread">
 				<input
@@ -13,20 +13,8 @@
 					<font-awesome-icon icon="plus" />
 				</button>
 			</form>
-			<select
-				class="p-1 border-2 border-gray-300 rounded-md text-black"
-				v-model="selectedVoice"
-			>
-				<option
-					v-for="voice in ttsVoices"
-					:key="voice.voice_id"
-					:value="voice.voice_id"
-				>
-					{{ voice.name }}
-				</option>
-			</select>
 		</div>
-		<ul class="flex-grow list-none overflow-y-auto pb-7">
+		<ul class="flex-grow list-none overflow-y-auto">
 			<li
 				:class="{
 					'p-1': true,
@@ -55,20 +43,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useThreadStore } from '@/stores/threads';
-import { getTTSVoices } from '@/api';
-import type { Voice } from '@shared/typesElevenLabs';
+import { useStore } from '@/store';
+import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
+import ChatModelSelector from '@/components/ChatModelSelector.vue';
 
-const store = useThreadStore();
+const store = useStore();
 const threads = computed(() => store.$state.threads);
 const currentThread = computed(() => store.$state.currentThreadId);
 const isSelectedThread = computed(() => {
 	return (threadId: string) => threadId === currentThread.value;
-});
-const ttsVoices = ref([] as Voice[]);
-const selectedVoice = computed({
-	get: () => store.$state.ttsVoiceId as string,
-	set: (value: string) => store.setTTSVoiceId(value),
 });
 
 let newThreadName = ref('');
@@ -78,12 +61,7 @@ onMounted(async () => {
 	if (lsSelectedThread) {
 		store.setCurrentThread(lsSelectedThread);
 	}
-	const lsSelectedVoice = localStorage.getItem('ttsVoiceId');
-	if (lsSelectedVoice) {
-		store.setTTSVoiceId(lsSelectedVoice);
-	}
 	await store.fetchThreads();
-	ttsVoices.value = await getTTSVoices();
 });
 
 async function createThread() {
@@ -95,8 +73,8 @@ async function deleteThread(threadId: string) {
 	await store.deleteThread(threadId);
 }
 
-// Selects a thread and set it as the current thread
 function selectThread(threadId: string) {
 	store.setCurrentThread(threadId);
 }
 </script>
+@/stores

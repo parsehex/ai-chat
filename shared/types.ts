@@ -10,6 +10,9 @@ export interface Thread {
 	name: string;
 	systemPrompt: string;
 	messages: Message[];
+	ttsEnabled: boolean;
+	ttsVoiceId: string;
+	chatModel: ChatModel;
 }
 
 export interface ChatRequest {
@@ -20,3 +23,5 @@ export interface ChatRequest {
 export interface ThreadRequest {
 	name: string;
 }
+
+export type ChatModel = 'gpt-3.5-turbo' | 'gpt-4';

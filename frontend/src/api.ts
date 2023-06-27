@@ -1,5 +1,5 @@
 import type { Voice } from '@shared/typesElevenLabs';
-import type { Thread } from '@shared/types';
+import type { ChatModel, Thread } from '@shared/types';
 import axios from 'axios';
 
 export async function getThreads(): Promise<Thread[]> {
@@ -26,30 +26,31 @@ export async function clearThreadHistory(threadId: string): Promise<Thread> {
 	return response.data;
 }
 
-export async function updateSystemPrompt(
-	threadId: string,
-	newPrompt: string
-): Promise<Thread> {
-	const response = await axios.patch(`/api/threads/${threadId}`, {
-		systemPrompt: newPrompt,
+interface UpdateThreadOptions {
+	threadId: string;
+	systemPrompt: string;
+	ttsEnabled: boolean;
+	ttsVoiceId: string;
+	chatModel: ChatModel;
+}
+export async function updateThread(opt: UpdateThreadOptions): Promise<Thread> {
+	const response = await axios.patch(`/api/threads/${opt.threadId}`, {
+		systemPrompt: opt.systemPrompt,
+		ttsEnabled: opt.ttsEnabled,
+		ttsVoiceId: opt.ttsVoiceId,
+		chatModel: opt.chatModel,
 	});
 	return response.data;
 }
 
 export async function sendMessage(
 	threadId: string,
-	content: string,
-	ttsEnabled = false,
-	voiceId?: string
+	content: string
 ): Promise<Thread> {
 	const data: Record<string, unknown> = {
 		id: threadId,
 		message: content,
 	};
-	if (ttsEnabled && voiceId) {
-		data['tts'] = true;
-		data['voice_id'] = voiceId;
-	}
 	const response = await axios.post(`/api/chat`, data);
 	return response.data.thread;
 }
@@ -106,12 +107,9 @@ export async function convertTextToSpeech(
 
 export async function ttsFromMessage(
 	threadId: string,
-	messageId: string,
-	voice_id: string
+	messageId: string
 ): Promise<Thread> {
-	const response = await axios.post(`/api/tts/chat/${threadId}/${messageId}`, {
-		voice_id,
-	});
+	const response = await axios.post(`/api/tts/chat/${threadId}/${messageId}`);
 	return response.data.thread;
 }
 

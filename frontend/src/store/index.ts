@@ -1,19 +1,24 @@
 import { defineStore } from 'pinia';
-import { type Message, type Thread } from '@shared/types';
-import * as api from '../api';
+import { type ChatModel, type Message, type Thread } from '@shared/types';
+import * as api from '@/api';
 
-export const useThreadStore = defineStore({
+export const useStore = defineStore({
 	id: 'thread',
 	state: () => ({
 		threads: [] as Thread[],
 		currentThreadId: '',
 		apiCallInProgress: false,
 		ttsVoiceId: null as string | null,
+		chatModel: 'gpt-3.5-turbo' as 'gpt-3.5-turbo' | 'gpt-4',
 	}),
 	actions: {
 		setTTSVoiceId(voiceId: string | null) {
 			this.ttsVoiceId = voiceId;
 			localStorage.setItem('ttsVoiceId', voiceId || '');
+		},
+		setChatModel(model: 'gpt-3.5-turbo' | 'gpt-4') {
+			this.chatModel = model;
+			localStorage.setItem('chatModel', model);
 		},
 		setCurrentThread(threadId: string) {
 			this.currentThreadId = threadId;
@@ -89,11 +94,32 @@ export const useThreadStore = defineStore({
 				console.error('Failed to clear thread history:', error);
 			}
 		},
-		async updateSystemPrompt(threadId: string, newPrompt: string) {
+		async updateThread(
+			threadId: string,
+			{
+				systemPrompt,
+				ttsEnabled,
+				ttsVoiceId,
+				chatModel,
+			}: {
+				systemPrompt: string;
+				ttsEnabled: boolean;
+				ttsVoiceId: string;
+				chatModel: ChatModel;
+			}
+		) {
 			try {
-				this.setThread(await api.updateSystemPrompt(threadId, newPrompt));
+				this.setThread(
+					await api.updateThread({
+						threadId,
+						systemPrompt,
+						ttsEnabled,
+						ttsVoiceId,
+						chatModel,
+					})
+				);
 			} catch (error) {
-				console.error('Failed to update system prompt:', error);
+				console.error('Failed to update thread:', error);
 			}
 		},
 		async updateMessage(threadId: string, messageId: string, content: string) {
@@ -117,13 +143,8 @@ export const useThreadStore = defineStore({
 			}
 		},
 		async generateTTSFromMessage(threadId: string, messageId: string) {
-			if (!this.ttsVoiceId) return;
 			try {
-				const thread = await api.ttsFromMessage(
-					threadId,
-					messageId,
-					this.ttsVoiceId
-				);
+				const thread = await api.ttsFromMessage(threadId, messageId);
 				this.setThread(thread);
 			} catch (error: any) {
 				console.error('Failed to generate TTS from message:', error);

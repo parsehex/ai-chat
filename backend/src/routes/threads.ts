@@ -25,10 +25,7 @@ router
 		}
 	})
 	.post(async (req, res) => {
-		const {
-			name,
-			systemPrompt = 'You are playing as an unhelpful chatbot. You should generally respond in the opposite manner as to how you normally do.',
-		} = req.body;
+		const { name, systemPrompt = 'You are a chatbot.' } = req.body;
 		if (!name) {
 			return res.status(400).json({ error: 'Thread name is required' });
 		}
@@ -78,19 +75,21 @@ router
 	.patch(async (req, res) => {
 		try {
 			const threadId = req.params.threadId;
-			const newPrompt = req.body.systemPrompt;
+			const { systemPrompt, ttsEnabled, ttsVoiceId, chatModel } = req.body;
 
-			if (!newPrompt) {
-				return res.status(400).json({ error: 'System prompt is required' });
+			if (!systemPrompt && !ttsEnabled && !ttsVoiceId && !chatModel) {
+				return res.status(400).json({ error: 'No data to update' });
 			}
 
 			const threadFilePath = path.join(THREADS_PATH, `${threadId}.json`);
 			let threadData = JSON.parse(await fs.readFile(threadFilePath, 'utf-8'));
 
-			// Update the system prompt
 			threadData = {
 				...threadData,
-				systemPrompt: newPrompt,
+				systemPrompt,
+				ttsEnabled,
+				ttsVoiceId,
+				chatModel,
 			};
 
 			await fs.writeFile(threadFilePath, JSON.stringify(threadData));
