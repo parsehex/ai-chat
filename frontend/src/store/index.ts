@@ -8,14 +8,9 @@ export const useStore = defineStore({
 		threads: [] as Thread[],
 		currentThreadId: '',
 		apiCallInProgress: false,
-		ttsVoiceId: null as string | null,
 		chatModel: 'gpt-3.5-turbo' as 'gpt-3.5-turbo' | 'gpt-4',
 	}),
 	actions: {
-		setTTSVoiceId(voiceId: string | null) {
-			this.ttsVoiceId = voiceId;
-			localStorage.setItem('ttsVoiceId', voiceId || '');
-		},
 		setChatModel(model: 'gpt-3.5-turbo' | 'gpt-4') {
 			this.chatModel = model;
 			localStorage.setItem('chatModel', model);

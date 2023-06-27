@@ -10,11 +10,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { getChatModels } from '@/api';
+import { computed, onMounted } from 'vue';
 import type { ChatModel } from '@shared/types';
+import { useCacheStore } from '@/store/cache';
 
-const chatModels = ref([] as ChatModel[]);
+const cacheStore = useCacheStore();
+const chatModels = computed(() => cacheStore.chatModels);
 
 const props = withDefaults(
 	defineProps<{
@@ -33,6 +34,6 @@ const internalValue = computed({
 });
 
 onMounted(async () => {
-	chatModels.value = await getChatModels();
+	await cacheStore.fetchChatModels();
 });
 </script>

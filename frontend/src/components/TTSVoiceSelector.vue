@@ -14,11 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { getTTSVoices } from '@/api';
-import type { Voice } from '@shared/typesElevenLabs';
+import { computed, onMounted } from 'vue';
+import { useCacheStore } from '@/store/cache';
 
-const ttsVoices = ref([] as Voice[]);
+const cacheStore = useCacheStore();
+const ttsVoices = computed(() => cacheStore.ttsVoices);
 
 const props = withDefaults(
 	defineProps<{
@@ -37,6 +37,6 @@ const internalValue = computed({
 });
 
 onMounted(async () => {
-	ttsVoices.value = await getTTSVoices();
+	await cacheStore.fetchTTSVoices();
 });
 </script>
