@@ -111,14 +111,14 @@
 
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue';
-import { useStore } from '@/store';
+import { useThreadStore } from '@/store/threads';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import FlexibleTextInput from '@/components/FlexibleTextInput.vue';
 import MessageForm from '@/components/MessageForm.vue';
 import ChatModelSelector from '@/components/ChatModelSelector.vue';
 import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
 
-const threadStore = useStore();
+const threadStore = useThreadStore();
 const messageContainer = ref(null as HTMLDivElement | null);
 const systemPrompt = ref('');
 const editingMessageId = ref('');
@@ -260,3 +260,4 @@ function generateTTS(messageId: string) {
 	threadStore.generateTTSFromMessage(threadId.value, messageId);
 }
 </script>
+@/store/threads

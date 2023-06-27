@@ -13,6 +13,11 @@ const router = createRouter({
 			name: 'chat',
 			component: () => import('../views/Chat.vue'),
 		},
+		{
+			path: '/tts',
+			name: 'tts',
+			component: () => import('../views/TTS.vue'),
+		},
 	],
 });
 

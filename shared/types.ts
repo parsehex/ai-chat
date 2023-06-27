@@ -25,3 +25,22 @@ export interface ThreadRequest {
 }
 
 export type ChatModel = 'gpt-3.5-turbo' | 'gpt-4';
+
+export interface TTSText {
+	id: string;
+	text: string;
+	voiceId?: string;
+	voiceStability?: number;
+	voiceSimilarityBoost?: number;
+	audioUrl: string;
+}
+export interface TTSGroup {
+	id: string;
+	name: string;
+	defaultTTS: {
+		voiceId: string;
+		voiceStability: number;
+		voiceSimilarityBoost: number;
+	};
+	texts: TTSText[];
+}

@@ -6,7 +6,7 @@ import { TTS_PATH } from './const.js';
 import { Voice } from '../../shared/typesElevenLabs.js';
 const API_KEY = process.env.ELEVENLABS_API_KEY;
 
-let voices: Voice[] = [];
+export let voices: Voice[] = [];
 
 function getSayVoices(): Promise<string[]> {
 	return new Promise((resolve, reject) => {
@@ -71,7 +71,9 @@ export const getVoiceByName = async (
 export const convertTextToSpeech = async (
 	voiceId: string,
 	text: string,
-	type: 'chat' | 'tts'
+	type: 'chat' | 'tts',
+	voiceStability = 0.25,
+	voiceSimilarityBoost = 0.25
 ): Promise<string> => {
 	try {
 		const fileName = `${Date.now()}.mp3`;
@@ -83,7 +85,14 @@ export const convertTextToSpeech = async (
 			return `/tts/${type}/${fileName}`;
 		}
 		// (apiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId)
-		await ElevenLabs.textToSpeech(API_KEY, voiceId, filePath, text, 0.25);
+		await ElevenLabs.textToSpeech(
+			API_KEY,
+			voiceId,
+			filePath,
+			text,
+			voiceStability,
+			voiceSimilarityBoost
+		);
 		return `/tts/${type}/${fileName}`;
 	} catch (error) {
 		console.error('Error in converting text to speech:', error);

@@ -1,5 +1,5 @@
 <template>
-	<div class="relative border border-gray-300 rounded">
+	<div class="relative border border-gray-300 rounded z-10 p-2">
 		<button
 			v-if="!hideButton"
 			class="absolute top-0 left-0 m-1 text-xs text-gray-400"
@@ -9,7 +9,7 @@
 		</button>
 		<component
 			:is="inputType"
-			class="w-full p-2"
+			class="w-full p-2 dark:bg-gray-700"
 			:class="{ 'h-20': inputType === 'textarea' }"
 			:value="modelValue"
 			@input="updateValue"

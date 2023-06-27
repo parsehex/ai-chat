@@ -16,19 +16,22 @@
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import ChatSidebar from './views/sidebar/Chat.vue';
-// import TTSSidebar from './components/TTSSidebar.vue'
-// import STTSidebar from './components/STTSidebar.vue'
+// import STTSidebar from './views/sidebar/STT.vue'
+import TTSSidebar from './views/sidebar/TTS.vue';
 
 const route = useRoute();
 
 const sidebarComponent = computed((): any => {
 	switch (route.path) {
 		case '/chat':
+		case '/chat/':
 			return ChatSidebar;
-		// case '/tts':
-		// 	return TTSSidebar;
 		// case '/stt':
+		// case '/stt/':
 		// 	return STTSidebar;
+		case '/tts':
+		case '/tts/':
+			return TTSSidebar;
 		default:
 			return null;
 	}

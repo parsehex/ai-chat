@@ -1,6 +1,6 @@
 <template>
 	<select
-		class="p-1 border-2 border-gray-300 rounded-md text-black"
+		class="p-1 border-2 border-gray-300 rounded-md"
 		v-model="internalValue"
 	>
 		<option

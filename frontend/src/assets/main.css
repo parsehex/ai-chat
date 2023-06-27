@@ -24,6 +24,8 @@
 	@apply bg-green-600 text-white;
 }
 
-input[type='text'] {
-	@apply px-2 py-1 border rounded shadow transition-colors duration-200 dark:bg-transparent;
+input[type='text'],
+input[type='number'],
+select {
+	@apply px-2 py-1 border rounded shadow transition-colors duration-200 dark:bg-transparent dark:text-white;
 }

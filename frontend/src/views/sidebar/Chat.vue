@@ -43,13 +43,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useStore } from '@/store';
-import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
-import ChatModelSelector from '@/components/ChatModelSelector.vue';
+import { useThreadStore } from '@/store/threads';
 
-const store = useStore();
-const threads = computed(() => store.$state.threads);
-const currentThread = computed(() => store.$state.currentThreadId);
+const threadStore = useThreadStore();
+const threads = computed(() => threadStore.$state.threads);
+const currentThread = computed(() => threadStore.$state.currentThreadId);
 const isSelectedThread = computed(() => {
 	return (threadId: string) => threadId === currentThread.value;
 });
@@ -59,22 +57,21 @@ let newThreadName = ref('');
 onMounted(async () => {
 	const lsSelectedThread = localStorage.getItem('selectedThread');
 	if (lsSelectedThread) {
-		store.setCurrentThread(lsSelectedThread);
+		threadStore.setCurrentThread(lsSelectedThread);
 	}
-	await store.fetchThreads();
+	await threadStore.fetchThreads();
 });
 
 async function createThread() {
 	if (!newThreadName.value) return;
-	await store.createThread({ name: newThreadName.value });
+	await threadStore.createThread({ name: newThreadName.value });
 	newThreadName.value = ''; // reset the input field after creating a thread
 }
 async function deleteThread(threadId: string) {
-	await store.deleteThread(threadId);
+	await threadStore.deleteThread(threadId);
 }
 
 function selectThread(threadId: string) {
-	store.setCurrentThread(threadId);
+	threadStore.setCurrentThread(threadId);
 }
 </script>
-@/stores

@@ -33,12 +33,12 @@
 <script setup lang="ts">
 import { computed, ref, onUnmounted } from 'vue';
 import * as api from '@/api';
-import { useStore } from '@/store';
+import { useThreadStore } from '@/store/threads';
 import type { Message } from '@shared/types';
 import AudioPlayer from './AudioPlayer.vue';
 import FlexibleTextInput from './FlexibleTextInput.vue';
 
-const threadStore = useStore();
+const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId);
 const message = ref('');
 const useTTS = ref(false);
@@ -176,4 +176,3 @@ onUnmounted(() => {
 	}
 }
 </style>
-@/stores

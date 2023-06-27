@@ -2,19 +2,14 @@ import { defineStore } from 'pinia';
 import { type ChatModel, type Message, type Thread } from '@shared/types';
 import * as api from '@/api';
 
-export const useStore = defineStore({
+export const useThreadStore = defineStore({
 	id: 'thread',
 	state: () => ({
 		threads: [] as Thread[],
 		currentThreadId: '',
 		apiCallInProgress: false,
-		chatModel: 'gpt-3.5-turbo' as 'gpt-3.5-turbo' | 'gpt-4',
 	}),
 	actions: {
-		setChatModel(model: 'gpt-3.5-turbo' | 'gpt-4') {
-			this.chatModel = model;
-			localStorage.setItem('chatModel', model);
-		},
 		setCurrentThread(threadId: string) {
 			this.currentThreadId = threadId;
 			localStorage.setItem('selectedThread', threadId);
