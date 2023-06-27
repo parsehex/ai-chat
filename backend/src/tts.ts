@@ -101,9 +101,5 @@ function sayTTSExport(text: string, voiceName: string, filePath: string) {
 }
 
 (async () => {
-	await fs.ensureDir(TTS_PATH);
-	await fs.ensureDir(path.join(TTS_PATH, 'chat'));
-	await fs.ensureDir(path.join(TTS_PATH, 'tts'));
-
 	voices = (await getVoices()) || [];
 })();
