@@ -114,3 +114,8 @@ export async function ttsFromMessage(
 	});
 	return response.data.thread;
 }
+
+export async function getChatModels(): Promise<ChatModel[]> {
+	const response = await axios.get('/api/chat/models');
+	return response.data.models;
+}

@@ -11,10 +11,11 @@ export default openai;
 export async function sendMessage(
 	systemPrompt: string,
 	history: ChatCompletionRequestMessage[],
-	userMessage: string
+	userMessage: string,
+	model = 'gpt-3.5-turbo'
 ) {
 	const chatResponse = await openai.createChatCompletion({
-		model: 'gpt-3.5-turbo',
+		model,
 		messages: [
 			{
 				role: 'system',

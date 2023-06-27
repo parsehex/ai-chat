@@ -11,6 +11,16 @@ import { convertTextToSpeech, getVoiceById, getVoices } from '../tts.js';
 
 const router = Router();
 
+router.get('/api/chat/models', async (req, res) => {
+	try {
+		const models = ['gpt-3.5-turbo', 'gpt-4'];
+		res.json({ models });
+	} catch (err: any) {
+		console.log(err);
+		res.status(500).json({ error: err.message });
+	}
+});
+
 router.post('/api/chat', async (req, res) => {
 	const { message, id, tts } = req.body;
 
