@@ -29,11 +29,6 @@
 			<form @submit.prevent="updateSystemPrompt" class="flex">
 				<label class="flex-grow flex">
 					<span class="mr-1">System prompt:</span>
-					<!-- <input
-						class="flex-grow border-2 border-gray-300 rounded-md px-1"
-						v-model="systemPrompt"
-						type="text"
-					/> -->
 					<FlexibleTextInput
 						class="flex-grow border-2 border-gray-300 rounded-md px-1"
 						v-model="systemPrompt"
@@ -73,6 +68,15 @@
 							<font-awesome-icon icon="comment" />
 						</button>
 						<button
+							v-if="message.role === 'assistant'"
+							:class="'btn' + (resending ? ' bg-gray-500' : '')"
+							@click="resendMessage(message.id)"
+							title="Regenerate message"
+							:disabled="resending"
+						>
+							<font-awesome-icon icon="arrow-rotate-left" />
+						</button>
+						<button
 							class="btn"
 							@click="startEditing(message.id)"
 							title="Edit message"
@@ -94,7 +98,6 @@
 					class="flex"
 				>
 					<!-- editing message -->
-					<!-- <input type="text" class="flex-grow" v-model="message.content" /> -->
 					<FlexibleTextInput class="flex-grow" v-model="message.content" />
 					<button
 						class="btn"
@@ -120,6 +123,7 @@ import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
 
 const threadStore = useThreadStore();
 const messageContainer = ref(null as HTMLDivElement | null);
+const resending = ref(false);
 const systemPrompt = ref('');
 const editingMessageId = ref('');
 
@@ -138,7 +142,8 @@ const ttsEnabled = computed({
 	get: () => thread.value?.ttsEnabled || false,
 	set: (value) => {
 		if (threadId.value) {
-			threadStore.updateThread(threadId.value, {
+			threadStore.updateThread({
+				threadId: threadId.value,
 				systemPrompt: systemPrompt.value,
 				chatModel: chatModel.value,
 				ttsEnabled: value,
@@ -151,7 +156,8 @@ const ttsVoiceId = computed({
 	get: () => thread.value?.ttsVoiceId || '',
 	set: (value) => {
 		if (threadId.value) {
-			threadStore.updateThread(threadId.value, {
+			threadStore.updateThread({
+				threadId: threadId.value,
 				systemPrompt: systemPrompt.value,
 				chatModel: chatModel.value,
 				ttsEnabled: ttsEnabled.value,
@@ -165,7 +171,8 @@ const chatModel = computed({
 	get: () => thread.value?.chatModel || 'gpt-3.5-turbo',
 	set: (value) => {
 		if (threadId.value && thread.value && value !== thread.value.chatModel) {
-			threadStore.updateThread(threadId.value, {
+			threadStore.updateThread({
+				threadId: threadId.value,
 				systemPrompt: systemPrompt.value,
 				chatModel: value,
 				ttsEnabled: ttsEnabled.value,
@@ -203,7 +210,8 @@ async function updateSystemPrompt() {
 		systemPrompt.value &&
 		systemPrompt.value !== thread.value?.systemPrompt
 	) {
-		await threadStore.updateThread(threadId.value, {
+		await threadStore.updateThread({
+			threadId: threadId.value,
 			systemPrompt: systemPrompt.value,
 			chatModel: chatModel.value,
 			ttsEnabled: ttsEnabled.value,
@@ -259,5 +267,10 @@ function isEditing(messageId: string) {
 function generateTTS(messageId: string) {
 	threadStore.generateTTSFromMessage(threadId.value, messageId);
 }
+
+async function resendMessage(messageId: string) {
+	resending.value = true;
+	await threadStore.resendMessage(threadId.value, messageId);
+	resending.value = false;
+}
 </script>
-@/store/threads

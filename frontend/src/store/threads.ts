@@ -2,6 +2,14 @@ import { defineStore } from 'pinia';
 import { type ChatModel, type Message, type Thread } from '@shared/types';
 import * as api from '@/api';
 
+interface UpdateThreadOptions {
+	name: string;
+	systemPrompt: string;
+	ttsEnabled: boolean;
+	ttsVoiceId: string;
+	chatModel: ChatModel;
+}
+
 export const useThreadStore = defineStore({
 	id: 'thread',
 	state: () => ({
@@ -85,32 +93,16 @@ export const useThreadStore = defineStore({
 			}
 		},
 		async updateThread(
-			threadId: string,
-			{
-				systemPrompt,
-				ttsEnabled,
-				ttsVoiceId,
-				chatModel,
-			}: {
-				systemPrompt: string;
-				ttsEnabled: boolean;
-				ttsVoiceId: string;
-				chatModel: ChatModel;
-			}
+			data: Partial<UpdateThreadOptions> & { threadId: string }
 		) {
 			try {
-				this.setThread(
-					await api.updateThread({
-						threadId,
-						systemPrompt,
-						ttsEnabled,
-						ttsVoiceId,
-						chatModel,
-					})
-				);
+				this.setThread(await api.updateThread(data));
 			} catch (error) {
 				console.error('Failed to update thread:', error);
 			}
+		},
+		async updateThreadName(threadId: string, name: string) {
+			this.updateThread({ threadId, name });
 		},
 		async updateMessage(threadId: string, messageId: string, content: string) {
 			try {
@@ -138,6 +130,14 @@ export const useThreadStore = defineStore({
 				this.setThread(thread);
 			} catch (error: any) {
 				console.error('Failed to generate TTS from message:', error);
+			}
+		},
+		async resendMessage(threadId: string, messageId: string) {
+			try {
+				const thread = await api.resendMessage(threadId, messageId);
+				this.setThread(thread);
+			} catch (error: any) {
+				console.error('Failed to resend message:', error);
 			}
 		},
 	},

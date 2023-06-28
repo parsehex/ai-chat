@@ -26,9 +26,10 @@
 				:key="thread.id"
 				@click="selectThread(thread.id)"
 			>
-				<span :class="{ 'font-bold': isSelectedThread(thread.id) }">
-					{{ thread.name }}
-				</span>
+				<DoubleClickableLabel
+					v-model="thread.name"
+					@submit="updateThreadName(thread.id, $event)"
+				/>
 				<button
 					class="btn-err ml-1"
 					@click.prevent.stop="deleteThread(thread.id)"
@@ -44,6 +45,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useThreadStore } from '@/store/threads';
+import DoubleClickableLabel from '@/components/DoubleClickableLabel.vue';
 
 const threadStore = useThreadStore();
 const threads = computed(() => threadStore.$state.threads);
@@ -73,5 +75,9 @@ async function deleteThread(threadId: string) {
 
 function selectThread(threadId: string) {
 	threadStore.setCurrentThread(threadId);
+}
+
+async function updateThreadName(threadId: string, newName: string) {
+	await threadStore.updateThreadName(threadId, newName);
 }
 </script>

@@ -10,6 +10,14 @@ import * as api from '@/api/tts-groups';
 
 (window as any).ttsApi = api;
 
+interface UpdateTTSGroupOptions {
+	groupId: string;
+	name?: string;
+	defaultTTSVoiceId?: string;
+	defaultTTSVoiceStability?: number;
+	defaultTTSVoiceSimilarityBoost?: number;
+}
+
 export const useGroupStore = defineStore({
 	id: 'groups',
 	state: () => ({
@@ -96,27 +104,9 @@ export const useGroupStore = defineStore({
 				console.error('Failed to clear group history:', error);
 			}
 		},
-		async updateGroup(
-			groupId: string,
-			{
-				defaultTTSVoiceId,
-				defaultTTSVoiceStability,
-				defaultTTSVoiceSimilarityBoost,
-			}: {
-				defaultTTSVoiceId?: string;
-				defaultTTSVoiceStability?: number;
-				defaultTTSVoiceSimilarityBoost?: number;
-			}
-		) {
+		async updateGroup(data: UpdateTTSGroupOptions) {
 			try {
-				this.setGroup(
-					await api.updateGroup({
-						groupId,
-						defaultTTSVoiceId,
-						defaultTTSVoiceStability,
-						defaultTTSVoiceSimilarityBoost,
-					})
-				);
+				this.setGroup(await api.updateGroup(data));
 			} catch (error) {
 				console.error('Failed to update group:', error);
 			}

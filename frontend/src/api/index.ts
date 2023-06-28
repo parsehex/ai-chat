@@ -28,18 +28,23 @@ export async function clearThreadHistory(threadId: string): Promise<Thread> {
 
 interface UpdateThreadOptions {
 	threadId: string;
+	name: string;
 	systemPrompt: string;
 	ttsEnabled: boolean;
 	ttsVoiceId: string;
 	chatModel: ChatModel;
 }
-export async function updateThread(opt: UpdateThreadOptions): Promise<Thread> {
-	const response = await axios.patch(`/api/threads/${opt.threadId}`, {
-		systemPrompt: opt.systemPrompt,
-		ttsEnabled: opt.ttsEnabled,
-		ttsVoiceId: opt.ttsVoiceId,
-		chatModel: opt.chatModel,
-	});
+export async function updateThread(
+	opt: Partial<UpdateThreadOptions>
+): Promise<Thread> {
+	const data: Record<string, any> = {};
+	// only include properties that are defined
+	for (const [key, value] of Object.entries(opt)) {
+		if (value !== undefined) {
+			data[key] = value;
+		}
+	}
+	const response = await axios.patch(`/api/threads/${opt.threadId}`, data);
 	return response.data;
 }
 
@@ -53,6 +58,16 @@ export async function sendMessage(
 	};
 	const response = await axios.post(`/api/chat`, data);
 	return response.data.thread;
+}
+
+export async function resendMessage(
+	threadId: string,
+	messageId: string
+): Promise<Thread> {
+	const response = await axios.post(
+		`/api/threads/${threadId}/messages/${messageId}`
+	);
+	return response.data;
 }
 
 export async function updateMessage(

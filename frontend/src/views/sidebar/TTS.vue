@@ -26,9 +26,10 @@
 				:key="group.id"
 				@click="selectGroup(group.id)"
 			>
-				<span :class="{ 'font-bold': isSelectedGroup(group.id) }">
-					{{ group.name }}
-				</span>
+				<DoubleClickableLabel
+					v-model="group.name"
+					@submit="renameGroup(group.id, $event)"
+				/>
 				<button
 					class="btn-err ml-1"
 					@click.prevent.stop="deleteGroup(group.id)"
@@ -44,6 +45,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useGroupStore } from '@/store/tts-groups';
+import DoubleClickableLabel from '@/components/DoubleClickableLabel.vue';
 
 const groupStore = useGroupStore();
 const groups = computed(() => groupStore.$state.groups);
@@ -74,5 +76,8 @@ async function deleteGroup(groupId: string) {
 function selectGroup(groupId: string) {
 	groupStore.setCurrentGroup(groupId);
 }
+
+function renameGroup(groupId: string, name: string) {
+	groupStore.updateGroup({ groupId, name });
+}
 </script>
-@/store/threads

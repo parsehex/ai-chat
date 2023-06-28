@@ -4,6 +4,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+	faArrowRotateLeft,
 	faComment,
 	faMicrophone,
 	faPause,
@@ -21,6 +22,7 @@ import router from './router';
 const app = createApp(App);
 
 library.add(
+	faArrowRotateLeft,
 	faComment,
 	faMicrophone,
 	faPause,
