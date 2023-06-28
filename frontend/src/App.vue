@@ -2,7 +2,7 @@
 	<div class="flex flex-col border-r border-gray-300 pr-4 h-screen">
 		<div class="flex flex-row justify-around items-center">
 			<router-link to="/chat" class="btn-succ">Chat</router-link>
-			<router-link to="/tts" class="btn-succ">TTS</router-link>
+			<router-link to="/tts-groups" class="btn-succ">TTS</router-link>
 			<router-link to="/stt" class="btn-succ">STT</router-link>
 		</div>
 		<component :is="sidebarComponent"></component>
