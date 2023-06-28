@@ -1,5 +1,5 @@
-import type { Voice } from '@shared/typesElevenLabs';
-import type { ChatModel, Thread } from '@shared/types';
+import type { Voice } from '@shared/types/ElevenLabs';
+import type { ChatModel, Thread } from '@shared/types/chat';
 import axios from 'axios';
 
 export async function getThreads(): Promise<Thread[]> {

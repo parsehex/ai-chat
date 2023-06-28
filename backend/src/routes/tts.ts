@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import fs from 'fs-extra';
 import path from 'path';
-import { Thread } from '../../../shared/types.js';
+import { Thread } from '../../../shared/types/chat.js';
 import { THREADS_PATH } from '../const.js';
 import { convertTextToSpeech, getVoices } from '../tts.js';
 

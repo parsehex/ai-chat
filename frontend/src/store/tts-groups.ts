@@ -1,13 +1,6 @@
 import { defineStore } from 'pinia';
-import {
-	type ChatModel,
-	type Message,
-	type TTSGroup,
-	type TTSText,
-	type Thread,
-} from '@shared/types';
+import { type TTSGroup } from '@shared/types/tts';
 import * as api from '@/api/tts-groups';
-
 (window as any).ttsApi = api;
 
 interface UpdateTTSGroupOptions {

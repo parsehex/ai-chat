@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
-import { type ChatModel } from '@shared/types';
-import type { Voice } from '@shared/typesElevenLabs';
+import { type ChatModel } from '@shared/types/chat';
+import type { Voice } from '@shared/types/ElevenLabs';
 import * as api from '@/api';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;

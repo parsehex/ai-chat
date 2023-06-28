@@ -4,7 +4,7 @@ import path from 'path';
 import { v4 } from 'uuid';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
-import { Message, Thread } from '../../../shared/types.js';
+import { Thread } from '../../../shared/types/chat.js';
 import { ChatCompletionRequestMessage } from 'openai';
 import { voices } from '../tts.js';
 

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick, computed } from 'vue';
+import { ref, watch, onMounted, nextTick } from 'vue';
 
 const props = defineProps({
 	modelValue: {

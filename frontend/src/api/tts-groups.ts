@@ -1,6 +1,5 @@
-import type { Voice } from '@shared/typesElevenLabs';
-import type { ChatModel, TTSGroup, Thread } from '@shared/types';
 import axios from 'axios';
+import type { TTSGroup } from '@shared/types/tts';
 
 export async function getGroups(): Promise<TTSGroup[]> {
 	const response = await axios.get('/api/tts-groups');

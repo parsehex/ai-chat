@@ -34,7 +34,7 @@
 import { computed, ref, onUnmounted } from 'vue';
 import * as api from '@/api';
 import { useThreadStore } from '@/store/threads';
-import type { Message } from '@shared/types';
+import type { Message } from '@shared/types/chat';
 import AudioPlayer from './AudioPlayer.vue';
 import FlexibleTextInput from './FlexibleTextInput.vue';
 

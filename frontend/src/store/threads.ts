@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { type ChatModel, type Message, type Thread } from '@shared/types';
+import { type ChatModel, type Message, type Thread } from '@shared/types/chat';
 import * as api from '@/api';
 
 interface UpdateThreadOptions {

@@ -90,7 +90,8 @@ const groupDefaultVoiceId = computed({
 	get: () => group.value?.defaultTTS.voiceId || '',
 	set: (value) => {
 		if (group.value && value !== group.value.defaultTTS.voiceId) {
-			store.updateGroup(group.value.id, {
+			store.updateGroup({
+				groupId: group.value.id,
 				defaultTTSVoiceId: value,
 			});
 		}
@@ -100,7 +101,8 @@ const groupDefaultVoiceStability = computed({
 	get: () => group.value?.defaultTTS.voiceStability || 0.25,
 	set: (value) => {
 		if (group.value && value !== group.value.defaultTTS.voiceStability) {
-			store.updateGroup(group.value.id, {
+			store.updateGroup({
+				groupId: group.value.id,
 				defaultTTSVoiceStability: value,
 			});
 		}
@@ -110,7 +112,8 @@ const groupDefaultVoiceSimilarityBoost = computed({
 	get: () => group.value?.defaultTTS.voiceSimilarityBoost || 0.25,
 	set: (value) => {
 		if (group.value && value !== group.value.defaultTTS.voiceSimilarityBoost) {
-			store.updateGroup(group.value.id, {
+			store.updateGroup({
+				groupId: group.value.id,
 				defaultTTSVoiceSimilarityBoost: value,
 			});
 		}

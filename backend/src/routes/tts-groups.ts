@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TTS_GROUPS_PATH } from '../const.js';
 import { v4 } from 'uuid';
-import { TTSGroup, TTSText } from '../../../shared/types.js';
+import { TTSGroup, TTSText } from '../../../shared/types/tts.js';
 import { voices, convertTextToSpeech } from '../tts.js';
 
 const router = Router();

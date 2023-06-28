@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
-import type { ChatModel } from '@shared/types';
+import type { ChatModel } from '@shared/types/chat';
 import { useCacheStore } from '@/store/cache';
 
 const cacheStore = useCacheStore();

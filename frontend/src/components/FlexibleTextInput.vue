@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { ref } from 'vue';
 
 defineProps({
 	modelValue: {

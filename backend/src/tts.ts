@@ -3,7 +3,7 @@ import path from 'path';
 import say from 'say';
 import fs from 'fs-extra';
 import { TTS_PATH } from './const.js';
-import { Voice } from '../../shared/typesElevenLabs.js';
+import { Voice } from '../../shared/types/ElevenLabs.js';
 const API_KEY = process.env.ELEVENLABS_API_KEY;
 
 export let voices: Voice[] = [];
