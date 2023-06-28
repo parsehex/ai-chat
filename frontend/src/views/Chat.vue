@@ -120,6 +120,7 @@ import FlexibleTextInput from '@/components/FlexibleTextInput.vue';
 import MessageForm from '@/components/MessageForm.vue';
 import ChatModelSelector from '@/components/ChatModelSelector.vue';
 import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
+import { useCacheStore } from '@/store/cache';
 
 const threadStore = useThreadStore();
 const messageContainer = ref(null as HTMLDivElement | null);
@@ -272,5 +273,6 @@ async function resendMessage(messageId: string) {
 	resending.value = true;
 	await threadStore.resendMessage(threadId.value, messageId);
 	resending.value = false;
+	await useCacheStore().fetchElevenlabsLimit();
 }
 </script>

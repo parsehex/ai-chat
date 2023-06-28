@@ -1,18 +1,21 @@
 import { defineStore } from 'pinia';
 import { type ChatModel } from '@shared/types/chat';
-import type { Voice } from '@shared/types/ElevenLabs';
+import type { UserSubscription, Voice } from '@shared/types/ElevenLabs';
 import * as api from '@/api';
 
-const ONE_DAY = 1000 * 60 * 60 * 24;
+const ONE_HOUR = 1000 * 60 * 60;
+const ONE_DAY = ONE_HOUR * 24;
 
 export const useCacheStore = defineStore({
 	id: 'cache',
 	state: () => ({
 		ttsVoices: [] as Voice[],
 		chatModels: [] as ChatModel[],
+		elevenlabsLimit: null as UserSubscription | null,
 		lastFetch: {
-			ttsVoices: 0 as number,
-			chatModels: 0 as number,
+			ttsVoices: 0,
+			chatModels: 0,
+			elevenlabsLimit: 0,
 		},
 	}),
 	actions: {
@@ -40,6 +43,14 @@ export const useCacheStore = defineStore({
 				this.lastFetch.chatModels = Date.now();
 			} catch (error: any) {
 				console.error('Failed to fetch chat models:', error);
+			}
+		},
+		async fetchElevenlabsLimit() {
+			try {
+				this.elevenlabsLimit = await api.getElevenLabsLimits();
+				this.lastFetch.elevenlabsLimit = Date.now();
+			} catch (error: any) {
+				console.error('Failed to fetch ElevenLabs limit:', error);
 			}
 		},
 	},

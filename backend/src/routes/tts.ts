@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { Thread } from '../../../shared/types/chat.js';
 import { THREADS_PATH } from '../const.js';
-import { convertTextToSpeech, getVoices } from '../tts.js';
+import { convertTextToSpeech, getElevenLabsLimits, getVoices } from '../tts.js';
 
 const router = Router();
 
@@ -11,6 +11,15 @@ router.get('/api/voices', async (req, res) => {
 	try {
 		const voices = await getVoices();
 		res.json({ voices });
+	} catch (err: any) {
+		console.log(err);
+		res.status(500).json({ error: err.message });
+	}
+});
+router.get('/api/elevenlabs-limit', async (req, res) => {
+	try {
+		const limits = await getElevenLabsLimits();
+		res.json({ limits });
 	} catch (err: any) {
 		console.log(err);
 		res.status(500).json({ error: err.message });

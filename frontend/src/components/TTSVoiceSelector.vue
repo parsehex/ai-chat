@@ -12,6 +12,19 @@
 			{{ voice.name }}
 		</option>
 	</select>
+	<span
+		v-if="cacheStore.elevenlabsLimit && !internalValue.startsWith('saytts')"
+		class="ml-2 text-gray-500"
+		:title="`Used ${cacheStore.elevenlabsLimit.character_count} characters out of ${cacheStore.elevenlabsLimit.character_limit}.`"
+	>
+		{{
+			(
+				(cacheStore.elevenlabsLimit.character_count /
+					cacheStore.elevenlabsLimit.character_limit) *
+				100
+			).toFixed(1)
+		}}% used
+	</span>
 </template>
 
 <script setup lang="ts">
@@ -39,5 +52,6 @@ const internalValue = computed({
 
 onMounted(async () => {
 	await cacheStore.fetchTTSVoices();
+	await cacheStore.fetchElevenlabsLimit();
 });
 </script>

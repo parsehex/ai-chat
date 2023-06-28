@@ -1,4 +1,4 @@
-import type { Voice } from '@shared/types/ElevenLabs';
+import type { UserSubscription, Voice } from '@shared/types/ElevenLabs';
 import type { ChatModel, Thread } from '@shared/types/chat';
 import axios from 'axios';
 
@@ -131,4 +131,9 @@ export async function ttsFromMessage(
 export async function getChatModels(): Promise<ChatModel[]> {
 	const response = await axios.get('/api/chat/models');
 	return response.data.models;
+}
+
+export async function getElevenLabsLimits(): Promise<UserSubscription> {
+	const response = await axios.get('/api/elevenlabs-limit');
+	return response.data.limits;
 }

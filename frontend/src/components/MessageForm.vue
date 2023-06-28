@@ -37,6 +37,7 @@ import { useThreadStore } from '@/store/threads';
 import type { Message } from '@shared/types/chat';
 import AudioPlayer from './AudioPlayer.vue';
 import FlexibleTextInput from './FlexibleTextInput.vue';
+import { useCacheStore } from '@/store/cache';
 
 const threadStore = useThreadStore();
 const threadId = computed(() => threadStore.$state.currentThreadId);
@@ -134,6 +135,9 @@ const sendMessage = async () => {
 						updatedThread.messages[updatedThread.messages.length - 1];
 					if (lastMessage.tts) {
 						ttsUrl.value = lastMessage.tts;
+						setTimeout(() => {
+							useCacheStore().fetchElevenlabsLimit();
+						}, 50);
 					} else {
 						ttsUrl.value = '';
 					}

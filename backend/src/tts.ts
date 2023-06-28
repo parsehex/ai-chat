@@ -2,11 +2,31 @@ import * as ElevenLabs from 'elevenlabs-node';
 import path from 'path';
 import say from 'say';
 import fs from 'fs-extra';
+import axios from 'axios';
 import { TTS_PATH } from './const.js';
-import { Voice } from '../../shared/types/ElevenLabs.js';
+import { UserSubscription, Voice } from '../../shared/types/ElevenLabs.js';
+
 const API_KEY = process.env.ELEVENLABS_API_KEY;
 
 export let voices: Voice[] = [];
+
+export async function getElevenLabsLimits(): Promise<UserSubscription | null> {
+	try {
+		// have to use axios because the ElevenLabs library doesn't support this endpoint
+		const response = await axios.get(
+			'https://api.elevenlabs.io/v1/user/subscription',
+			{
+				headers: {
+					'xi-api-key': API_KEY,
+				},
+			}
+		);
+		return response.data;
+	} catch (error) {
+		console.error('Error in getting subscription:', error);
+		return null;
+	}
+}
 
 function getSayVoices(): Promise<string[]> {
 	return new Promise((resolve, reject) => {
@@ -78,7 +98,6 @@ export const convertTextToSpeech = async (
 	try {
 		const fileName = `${Date.now()}.mp3`;
 		const filePath = path.join(TTS_PATH, type, fileName);
-		console.log(filePath);
 		if (voiceId.startsWith('saytts')) {
 			const voiceName = voiceId.replace('saytts-', '').replace(/_/g, ' ');
 			await sayTTSExport(text, voiceName, filePath);
