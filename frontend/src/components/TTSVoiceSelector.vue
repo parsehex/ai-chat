@@ -6,6 +6,7 @@
 		<option
 			v-for="voice in ttsVoices"
 			:key="voice.voice_id"
+			class="dark:bg-gray-700 dark:text-white"
 			:value="voice.voice_id"
 		>
 			{{ voice.name }}
