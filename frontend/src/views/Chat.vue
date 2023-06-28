@@ -5,7 +5,7 @@
 			<h2 class="text-xl">
 				{{ thread?.name }}
 			</h2>
-			<div class="flex">
+			<div class="flex items-center">
 				<button class="btn-err outline" v-if="thread" @click="clearHistory">
 					Clear History
 				</button>

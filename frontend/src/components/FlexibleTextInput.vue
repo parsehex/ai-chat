@@ -1,5 +1,5 @@
 <template>
-	<div class="relative border border-gray-300 rounded z-10 p-2">
+	<div class="relative border border-gray-300 rounded z-10 p-1">
 		<button
 			v-if="!hideButton"
 			class="absolute top-0 left-0 m-1 text-xs text-gray-400"
