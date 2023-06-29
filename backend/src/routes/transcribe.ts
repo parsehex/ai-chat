@@ -1,12 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import { __dirname } from '../const.js';
+import { UPLOADS_PATH, __dirname } from '../const.js';
 import { getTranscription } from '../openai.js';
 
 const router = express.Router();
 
 const storage = multer.diskStorage({
-	destination: 'uploads/',
+	destination: UPLOADS_PATH,
 	filename: function (req, file, cb) {
 		// append the date and original file name
 		cb(null, Date.now() + '-' + file.originalname);
