@@ -3,6 +3,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import BodyParser from 'body-parser';
 import cors from 'cors';
+import session from 'express-session';
 import { FRONTEND_PATH, TTS_PATH } from './const.js';
 
 import chatRouter from './routes/chat.js';
@@ -24,66 +25,63 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
 	windowMs: _15_MINUTES,
-	max: 5,
-	skip: function (req, res) {
-		const pathsToSkip = ['/tts', '/tts/chat', '/tts/tts', '/api'];
-		if (pathsToSkip.some((path) => req.path.startsWith(path))) {
-			return true;
-		}
-
-		return !req.headers.authorization; // Skip rate limiting if there's no Authorization header
-	},
+	max: 10,
 });
 
 const app = express();
 
-app.use(BodyParser.json());
+app.use(
+	session({
+		secret: process.env.SESSION_SECRET || 'secret',
+		resave: false,
+		saveUninitialized: true,
+		cookie: { secure: process.env.IS_HTTPS === '1' },
+	})
+);
+
+app.use(BodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-if (HTTP_BASIC_AUTH) {
-	if (!u || !p) {
-		throw new Error(
-			'HTTP_BASIC_AUTH_USER and HTTP_BASIC_AUTH_PASSWORD must be set if HTTP_BASIC_AUTH is set'
-		);
-	}
-	console.log(
-		'HTTP Basic Auth is enabled -- Username:',
-		process.env.HTTP_BASIC_AUTH_USER
-	);
-	app.use(authLimiter);
+if (AUTH_ENABLED) {
+	app.get('/login', authLimiter, (req, res) => {
+		res.send(`
+			<form method="POST" action="/login">
+				<label>Username: <input type="text" name="username"></label><br>
+				<label>Password: <input type="password" name="password"></label><br>
+				<button type="submit">Log In</button>
+			</form>
+		`);
+	});
+
+	app.post('/login', authLimiter, (req, res) => {
+		const { username, password } = req.body;
+
+		console.log(username, password);
+
+		if (username === u && password === p) {
+			// @ts-ignore
+			req.session.user = true;
+			res.redirect('/');
+		} else {
+			// @ts-ignore
+			req.session.user = false;
+			res.redirect('/login');
+		}
+	});
+
+	app.use((req, res, next) => {
+		// @ts-ignore
+		if (req.session.user || req.path === '/login') {
+			next();
+		} else {
+			res.redirect('/login');
+		}
+	});
 } else {
-	console.log('HTTP Basic Auth is disabled');
+	app.get('/login', (req, res) => {
+		res.redirect('/');
+	});
 }
-app.use((req, res, next) => {
-	if (!HTTP_BASIC_AUTH) {
-		// No HTTP_BASIC_AUTH env variable, no auth
-		return next();
-	}
-
-	const reject = () => {
-		res.setHeader('www-authenticate', 'Basic');
-		res.sendStatus(401);
-	};
-
-	const authorization = req.headers.authorization;
-
-	if (!authorization) {
-		return reject();
-	}
-
-	const [username, password] = Buffer.from(
-		authorization.replace('Basic ', ''),
-		'base64'
-	)
-		.toString()
-		.split(':');
-
-	if (!(username === u && password === p)) {
-		return reject();
-	}
-
-	next();
-});
 
 app.use(express.static(FRONTEND_PATH));
 app.use('/tts', express.static(TTS_PATH));
