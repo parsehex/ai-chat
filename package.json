@@ -10,8 +10,9 @@
     "dev:frontend": "npm --prefix ./frontend run dev",
     "start": "npm --prefix ./backend run dev-server",
     "server": "npm --prefix ./backend start",
-    "build": "concurrently \"npm run build:backend\" \"npm run dev:frontend\"",
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+    "build": "npm run build:backend && npm run build:frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "preinstall": "(cd backend && npm install) && (cd frontend && npm install)"
   },
   "keywords": [],
   "author": "",
