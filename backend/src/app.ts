@@ -13,9 +13,9 @@ import ttsGroupsRouter from './routes/tts-groups.js';
 
 const _15_MINUTES = 15 * 60 * 1000;
 
-const HTTP_BASIC_AUTH = process.env.HTTP_BASIC_AUTH === '1';
-const u = process.env.HTTP_BASIC_AUTH_USER;
-const p = process.env.HTTP_BASIC_AUTH_PASSWORD;
+const AUTH_ENABLED = process.env.AUTH_ENABLED === '1';
+const u = process.env.AUTH_USER;
+const p = process.env.AUTH_PASSWORD;
 
 const apiLimiter = rateLimit({
 	windowMs: _15_MINUTES,
