@@ -1,7 +1,6 @@
 import path from 'path';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import BodyParser from 'body-parser';
 import cors from 'cors';
 import session from 'express-session';
 import { FRONTEND_PATH, TTS_PATH } from './const.js';
@@ -39,7 +38,8 @@ app.use(
 	})
 );
 
-app.use(BodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded());
 app.use(cors());
 
 if (AUTH_ENABLED) {
