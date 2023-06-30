@@ -13,7 +13,7 @@ export let voices: Voice[] = [];
 let sayTTSEnabled = true;
 
 if (!API_KEY) {
-	console.log('No ElevenLabs API key -- TTS is disabled);
+	console.log('No ElevenLabs API key -- TTS is disabled');
 }
 
 export async function getElevenLabsLimits(): Promise<UserSubscription | null> {
