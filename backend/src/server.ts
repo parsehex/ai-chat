@@ -26,4 +26,5 @@ app.use((err, req, res, next) => {
 	await fs.ensureDir(path.join(TTS_PATH, 'chat'));
 	await fs.ensureDir(path.join(TTS_PATH, 'tts'));
 	await fs.ensureDir(TTS_GROUPS_PATH);
+	console.log('Data directories are ready');
 })();

@@ -40,20 +40,21 @@ function getSayVoices(): Promise<string[]> {
 	});
 }
 async function getFixedSayVoices(): Promise<Voice[] | null> {
-	let voices: string[];
 	try {
-		voices = await getSayVoices();
-	} catch (error) {
-		console.error('SayTTS disabled:', error);
-		sayTTSEnabled = false;
-		return null;
+		const voices = await getSayVoices();
+		return voices.map((voice) => {
+			return {
+				voice_id: 'saytts-' + voice.replace(/ /g, '_'),
+				name: voice,
+			} as any;
+		});
+	} catch (error: any) {
+		if (error.message.includes('does not support platform')) {
+			sayTTSEnabled = false;
+			return null;
+		}
 	}
-	return voices.map((voice) => {
-		return {
-			voice_id: 'saytts-' + voice.replace(/ /g, '_'),
-			name: voice,
-		} as any;
-	});
+	return null;
 }
 
 export const getVoices = async (
