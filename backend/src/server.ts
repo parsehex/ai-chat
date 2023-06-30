@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import url from 'url';
 import app from './app.js';
-import { TTS_PATH, TTS_GROUPS_PATH } from './const.js';
+import { TTS_PATH, TTS_GROUPS_PATH, rootDataPath } from './const.js';
 
 const __dirname = url.fileURLToPath(new URL(import.meta.url));
 const THREADS_PATH = path.resolve(__dirname, '../../threads');
@@ -20,6 +20,7 @@ app.use((err, req, res, next) => {
 });
 
 (async () => {
+	await fs.ensureDir(rootDataPath);
 	await fs.ensureDir(THREADS_PATH);
 	await fs.ensureDir(TTS_PATH);
 	await fs.ensureDir(path.join(TTS_PATH, 'chat'));

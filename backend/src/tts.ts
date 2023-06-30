@@ -10,6 +10,8 @@ const API_KEY = process.env.ELEVENLABS_API_KEY;
 
 export let voices: Voice[] = [];
 
+let sayTTSEnabled = true;
+
 export async function getElevenLabsLimits(): Promise<UserSubscription | null> {
 	try {
 		// have to use axios because the ElevenLabs library doesn't support this endpoint
@@ -37,8 +39,15 @@ function getSayVoices(): Promise<string[]> {
 		});
 	});
 }
-async function getFixedSayVoices(): Promise<Voice[]> {
-	const voices = await getSayVoices();
+async function getFixedSayVoices(): Promise<Voice[] | null> {
+	let voices: string[];
+	try {
+		voices = await getSayVoices();
+	} catch (error) {
+		console.error('SayTTS disabled:', error);
+		sayTTSEnabled = false;
+		return null;
+	}
 	return voices.map((voice) => {
 		return {
 			voice_id: 'saytts-' + voice.replace(/ /g, '_'),
@@ -51,11 +60,14 @@ export const getVoices = async (
 	elevenlabsOnly = false
 ): Promise<Voice[] | null> => {
 	try {
+		const arr: any[] = [];
 		const response = await ElevenLabs.getVoices(API_KEY);
 		const { voices } = response;
 		if (elevenlabsOnly) return voices;
+		arr.push(...voices);
 		const sayVoices = await getFixedSayVoices();
-		return [...voices, ...sayVoices];
+		if (sayVoices) arr.push(...sayVoices);
+		return arr;
 	} catch (error) {
 		console.error('Error in getting voices:', error);
 		return null;
