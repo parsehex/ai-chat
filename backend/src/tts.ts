@@ -50,11 +50,12 @@ async function getFixedSayVoices(): Promise<Voice[] | null> {
 		});
 	} catch (error: any) {
 		if (error.message.includes('does not support platform')) {
+			console.log('SayTTS not supported on this platform');
 			sayTTSEnabled = false;
 			return null;
 		}
+		return null;
 	}
-	return null;
 }
 
 export const getVoices = async (
