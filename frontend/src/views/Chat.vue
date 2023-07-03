@@ -1,6 +1,6 @@
 <template>
 	<div class="flex-grow flex flex-col h-screen overflow-hidden">
-		<div class="sticky bg-gray-700 top-0 z-10 p-2">
+		<div class="sticky bg-gray-300 dark:bg-gray-700 top-0 z-10 p-2">
 			<!-- header -->
 			<h2 class="text-xl">
 				{{ thread?.name }}
@@ -42,7 +42,7 @@
 			<div v-if="!thread">No thread selected</div>
 			<div
 				v-else
-				class="hover:bg-gray-800 p-1"
+				class="hover:bg-gray-400 dark:hover:bg-gray-800 p-1"
 				v-for="message in thread.messages"
 				:key="message.id"
 			>
