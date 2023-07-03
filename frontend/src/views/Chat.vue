@@ -42,7 +42,7 @@
 			<div v-if="!thread">No thread selected</div>
 			<div
 				v-else
-				class="hover:bg-gray-400 dark:hover:bg-gray-800 p-1"
+				class="hover:bg-gray-300 dark:hover:bg-gray-800 p-1"
 				v-for="message in thread.messages"
 				:key="message.id"
 			>

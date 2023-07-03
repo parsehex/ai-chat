@@ -20,7 +20,7 @@
 					'p-1': true,
 					flex: true,
 					'justify-between': true,
-					'bg-gray-400': isSelectedThread(thread.id),
+					'bg-gray-300': isSelectedThread(thread.id),
 					'dark:bg-gray-500': isSelectedThread(thread.id),
 				}"
 				v-for="thread in threads"
