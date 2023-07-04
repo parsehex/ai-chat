@@ -33,8 +33,11 @@ async function sendOpenAIMessage(
 	systemPrompt: string,
 	history: ChatCompletionRequestMessage[],
 	userMessage: string,
-	model = 'gpt-3.5-turbo'
+	model: string
 ): Promise<CreateChatCompletionResponse> {
+	if (!model || !process.env.OPENAI_API_KEY || model.startsWith('ooba-')) {
+		throw new Error("Won't send a local message to OpenAI.");
+	}
 	const chatResponse = await openai.createChatCompletion({
 		model,
 		messages: [
