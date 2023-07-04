@@ -1,12 +1,15 @@
 import { Router } from 'express';
 import fs from 'fs-extra';
-import { type ChatCompletionRequestMessage } from 'openai';
+import {
+	CreateChatCompletionResponse,
+	type ChatCompletionRequestMessage,
+} from 'openai';
 import path from 'path';
 import { v4 } from 'uuid';
 import { Voice } from '../../../shared/types/ElevenLabs.js';
 import { Message, Thread } from '../../../shared/types/chat.js';
 import { THREADS_PATH } from '../const.js';
-import { sendMessage } from '../openai.js';
+import { getOobaModels, sendMessage } from '../openai.js';
 import { convertTextToSpeech, getVoiceById, getVoices } from '../tts.js';
 
 const router = Router();
@@ -14,6 +17,8 @@ const router = Router();
 router.get('/api/chat/models', async (req, res) => {
 	try {
 		const models = ['gpt-3.5-turbo', 'gpt-4'];
+		const ooba = await getOobaModels();
+		if (ooba.length > 0) models.push(...ooba);
 		res.json({ models });
 	} catch (err: any) {
 		console.log(err);
@@ -49,10 +54,15 @@ router.post('/api/chat', async (req, res) => {
 			message,
 			thread.chatModel
 		);
-		const responseObj = chatResponse.data.choices[0].message;
+		console.log(chatResponse);
+		if (!chatResponse) {
+			return res.status(500).json({ error: 'No response from AI' });
+		}
+
+		const responseObj = chatResponse.choices[0].message;
 
 		if (!responseObj) {
-			return res.status(500).json({ error: 'No response from AI' });
+			return res.status(500).json({ error: 'Invalid response from AI' });
 		}
 
 		const userMessage: Message = { id: v4(), role: 'user', content: message };
