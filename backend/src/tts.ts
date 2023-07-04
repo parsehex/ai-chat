@@ -17,6 +17,7 @@ if (!API_KEY) {
 }
 
 export async function getElevenLabsLimits(): Promise<UserSubscription | null> {
+	if (!API_KEY) return null;
 	try {
 		// have to use axios because the ElevenLabs library doesn't support this endpoint
 		const response = await axios.get(
