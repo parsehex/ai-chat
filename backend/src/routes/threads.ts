@@ -177,11 +177,11 @@ router.post('/api/threads/:threadId/messages/:messageId', async (req, res) => {
 			thread.chatModel
 		);
 
-		if (!chatResponse.data.choices[0].message) {
+		if (!chatResponse.choices[0].message) {
 			return res.status(500).json({ error: 'No response from AI' });
 		}
 
-		message.content = chatResponse.data.choices[0].message.content;
+		message.content = chatResponse.choices[0].message.content;
 		if (message.tts) delete message.tts;
 
 		await fs.writeFile(threadFilePath, JSON.stringify(thread));

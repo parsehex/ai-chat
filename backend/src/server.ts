@@ -1,17 +1,21 @@
-import fs from 'fs-extra';
 import path from 'path';
-import url from 'url';
-import app from './app.js';
-import { TTS_PATH, TTS_GROUPS_PATH, rootDataPath } from './const.js';
+import {
+	TTS_PATH,
+	TTS_GROUPS_PATH,
+	THREADS_PATH,
+	rootDataPath,
+	__dirname,
+} from './const.js';
+import { config } from 'dotenv';
+config({ path: path.resolve(__dirname, '../../../../.env') });
 
-const __dirname = url.fileURLToPath(new URL(import.meta.url));
-const THREADS_PATH = path.resolve(__dirname, '../../threads');
+import fs from 'fs-extra';
+import app from './app.js';
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
 	console.log(`Server is running on port ${PORT}`);
-	await fs.ensureDir(THREADS_PATH);
 });
 
 app.use((err, req, res, next) => {

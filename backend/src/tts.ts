@@ -12,7 +12,12 @@ export let voices: Voice[] = [];
 
 let sayTTSEnabled = true;
 
+if (!API_KEY) {
+	console.log('No ElevenLabs API key -- TTS is disabled');
+}
+
 export async function getElevenLabsLimits(): Promise<UserSubscription | null> {
+	if (!API_KEY) return null;
 	try {
 		// have to use axios because the ElevenLabs library doesn't support this endpoint
 		const response = await axios.get(
@@ -63,6 +68,7 @@ export const getVoices = async (
 ): Promise<Voice[] | null> => {
 	try {
 		const arr: any[] = [];
+		if (!API_KEY) return arr;
 		const response = await ElevenLabs.getVoices(API_KEY);
 		const { voices } = response;
 		if (elevenlabsOnly) return voices;
