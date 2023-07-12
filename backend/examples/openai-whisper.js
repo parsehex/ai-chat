@@ -1,12 +1,17 @@
-import dotenv from 'dotenv';
-dotenv.config();
-import axios from 'axios';
 import path from 'path';
 import url from 'url';
+
+const __dirname = path.resolve(
+	url.fileURLToPath(new URL(import.meta.url)),
+	'..'
+);
+
+import { config } from 'dotenv';
+config({ path: path.resolve(__dirname, '../../../../.env') });
+
+import axios from 'axios';
 import fs from 'fs-extra';
 import FormData from 'form-data';
-
-const __dirname = url.fileURLToPath(new URL(import.meta.url));
 
 const openaiKey = process.env.OPENAI_API_KEY;
 const mp3 = path.join(__dirname, '../audio.mp3');

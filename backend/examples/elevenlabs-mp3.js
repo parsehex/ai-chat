@@ -1,5 +1,14 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import url from 'url';
+
+const __dirname = path.resolve(
+	url.fileURLToPath(new URL(import.meta.url)),
+	'..'
+);
+
+import { config } from 'dotenv';
+config({ path: path.resolve(__dirname, '../../../../.env') });
+
 import {
 	getVoiceSettings,
 	getVoice,
