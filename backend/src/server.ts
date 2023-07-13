@@ -6,8 +6,6 @@ import {
 	rootDataPath,
 	__dirname,
 } from './const.js';
-import { config } from 'dotenv';
-config({ path: path.resolve(__dirname, '../../../../.env') });
 
 import fs from 'fs-extra';
 import app from './app.js';
