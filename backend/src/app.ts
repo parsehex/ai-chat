@@ -88,7 +88,9 @@ app.use('/tts', express.static(TTS_PATH));
 app.use('/tts/chat', express.static(TTS_PATH + '/chat'));
 app.use('/tts/tts', express.static(TTS_PATH + '/tts'));
 
-app.use(apiLimiter);
+if (process.env.NODE_ENV === 'production') {
+	app.use(apiLimiter);
+}
 app.use(chatRouter);
 app.use(threadsRouter);
 app.use(transcribeRouter);
