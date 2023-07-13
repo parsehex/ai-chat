@@ -37,7 +37,7 @@
 				<button class="btn" @click="updateSystemPrompt">Update</button>
 			</form>
 		</div>
-		<div ref="messageContainer" class="overflow-y-auto flex-grow">
+		<div class="messageContainer overflow-y-auto flex-grow">
 			<!-- message history -->
 			<div v-if="!thread">No thread selected</div>
 			<div
@@ -123,7 +123,6 @@ import TTSVoiceSelector from '@/components/TTSVoiceSelector.vue';
 import { useCacheStore } from '@/store/cache';
 
 const threadStore = useThreadStore();
-const messageContainer = ref(null as HTMLDivElement | null);
 const resending = ref(false);
 const systemPrompt = ref('');
 const editingMessageId = ref('');
@@ -192,8 +191,8 @@ watchEffect(() => {
 watchEffect(
 	() => {
 		console.log('thread changed');
-		if (thread.value?.messages && messageContainer.value) {
-			scrollToBottom();
+		if (thread.value?.messages) {
+			threadStore.scrollMessagesToBottom();
 		}
 	},
 	{ flush: 'post' }
@@ -223,13 +222,6 @@ async function updateSystemPrompt() {
 
 async function getThread(id: string) {
 	await threadStore.fetchThread(id);
-}
-
-function scrollToBottom() {
-	const lastMessage = messageContainer.value?.lastElementChild;
-	if (lastMessage) {
-		lastMessage.scrollIntoView();
-	}
 }
 
 async function clearHistory() {

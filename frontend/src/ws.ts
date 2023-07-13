@@ -33,6 +33,7 @@ socket.on('message', (msg) => {
 						content,
 					});
 				else message.content = content;
+				store.scrollMessagesToBottom();
 			}
 			break;
 		case 'stream-message':

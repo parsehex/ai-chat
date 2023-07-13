@@ -122,6 +122,7 @@ const sendMessage = async () => {
 			threadId: threadId.value,
 			message: newMessage,
 		});
+		threadStore.scrollMessagesToBottom();
 		try {
 			const updatedThread = await api.sendMessage(
 				threadId.value,
@@ -129,6 +130,7 @@ const sendMessage = async () => {
 			);
 			if (updatedThread) {
 				threadStore.setThread(updatedThread);
+				threadStore.scrollMessagesToBottom();
 				// does last message have tts?
 				if (updatedThread.messages.length > 0) {
 					const lastMessage =

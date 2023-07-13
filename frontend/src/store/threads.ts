@@ -18,6 +18,15 @@ export const useThreadStore = defineStore({
 		apiCallInProgress: false,
 	}),
 	actions: {
+		scrollMessagesToBottom() {
+			setTimeout(() => {
+				const messageContainer = document.querySelector('.messageContainer');
+				const lastMessage = messageContainer?.lastElementChild;
+				if (lastMessage) {
+					lastMessage.scrollIntoView();
+				}
+			}, 0);
+		},
 		setCurrentThread(threadId: string) {
 			this.currentThreadId = threadId;
 			localStorage.setItem('selectedThread', threadId);
