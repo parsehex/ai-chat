@@ -24,7 +24,7 @@ router.post('/api/transcribe', upload.single('audio'), async (req, res) => {
 
 		const transcription = getTranscription(audioFileInfo.path);
 		console.log(transcription);
-		res.json({ transcription: (await transcription).data.text });
+		res.json({ transcription: (await transcription).text });
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Error transcribing audio' });

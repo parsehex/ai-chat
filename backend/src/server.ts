@@ -9,10 +9,12 @@ import {
 
 import fs from 'fs-extra';
 import app from './app.js';
+import { server } from './http.js';
+import { initWS } from './ws.js';
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, async () => {
+server.listen(PORT, async () => {
 	console.log(`Server is running on port ${PORT}`);
 });
 
@@ -29,4 +31,6 @@ app.use((err, req, res, next) => {
 	await fs.ensureDir(path.join(TTS_PATH, 'tts'));
 	await fs.ensureDir(TTS_GROUPS_PATH);
 	console.log('Data directories are ready');
+
+	initWS(server);
 })();

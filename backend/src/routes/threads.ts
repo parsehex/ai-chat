@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { THREADS_PATH } from '../const.js';
 import { sendMessage } from '../openai.js';
 import { Thread } from '../../../shared/types/chat.js';
-import { ChatCompletionRequestMessage } from 'openai';
+// import { ChatCompletionRequestMessage } from 'openai';
 import { voices } from '../tts.js';
 
 const router = Router();
@@ -152,10 +152,10 @@ router.post('/api/threads/:threadId/messages/:messageId', async (req, res) => {
 			return {
 				role: message.role,
 				content: message.content,
-			} as ChatCompletionRequestMessage;
+			} as any; // TODO
 		});
 		// get all messages before the message to be re-sent
-		const tmpHistory: ChatCompletionRequestMessage[] = [];
+		const tmpHistory: any[] = []; // TODO
 		let userMessage = '';
 		for (let i = 0; i < history.length; i++) {
 			const msg = thread.messages[i];
@@ -174,14 +174,16 @@ router.post('/api/threads/:threadId/messages/:messageId', async (req, res) => {
 			thread.systemPrompt,
 			tmpHistory,
 			userMessage,
-			thread.chatModel
+			thread.chatModel,
+			thread.id,
+			message.id
 		);
 
 		if (!chatResponse.choices[0].message) {
 			return res.status(500).json({ error: 'No response from AI' });
 		}
 
-		message.content = chatResponse.choices[0].message.content;
+		message.content = chatResponse.choices[0].message.content as string;
 		if (message.tts) delete message.tts;
 
 		await fs.writeFile(threadFilePath, JSON.stringify(thread));

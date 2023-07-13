@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import fs from 'fs-extra';
-import {
-	CreateChatCompletionResponse,
-	type ChatCompletionRequestMessage,
-} from 'openai';
+// import {
+// 	CreateChatCompletionResponse,
+// 	type ChatCompletionRequestMessage,
+// } from 'openai';
 import path from 'path';
 import { v4 } from 'uuid';
 import { Voice } from '../../../shared/types/ElevenLabs.js';
@@ -45,14 +45,18 @@ router.post('/api/chat', async (req, res) => {
 			return {
 				role: message.role,
 				content: message.content,
-			} as ChatCompletionRequestMessage;
+			} as any; // TODO
 		});
+
+		const aiMessageId = v4();
 
 		const chatResponse = await sendMessage(
 			thread.systemPrompt,
 			history,
 			message,
-			thread.chatModel
+			thread.chatModel,
+			thread.id,
+			aiMessageId
 		);
 		console.log(chatResponse);
 		if (!chatResponse) {
@@ -67,9 +71,9 @@ router.post('/api/chat', async (req, res) => {
 
 		const userMessage: Message = { id: v4(), role: 'user', content: message };
 		const aiMessage: Message = {
-			id: v4(),
+			id: aiMessageId,
 			role: 'assistant',
-			content: responseObj.content,
+			content: responseObj.content as string,
 		};
 		thread.messages.push(userMessage);
 		thread.messages.push(aiMessage);
@@ -78,7 +82,7 @@ router.post('/api/chat', async (req, res) => {
 			const voice = (await getVoiceById(thread.ttsVoiceId)) as Voice;
 			const ttsResponse = await convertTextToSpeech(
 				voice.voice_id,
-				responseObj.content,
+				responseObj.content as string,
 				'chat'
 			);
 
