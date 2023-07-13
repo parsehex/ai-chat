@@ -57,7 +57,7 @@ export async function sendMessage(
 	beginStreamMessage(threadId, messageId);
 	for await (const chunk of stream) {
 		if (chunk.choices) {
-			responseText += chunk.choices[0].delta?.content;
+			responseText += chunk.choices[0].delta?.content || '';
 			streamMessageChunk(messageId, chunk.choices[0].delta?.content || '');
 		}
 	}
