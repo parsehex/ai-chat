@@ -91,12 +91,9 @@ router.patch('/api/threads/:threadId', async (req, res) => {
 			await fs.readFile(threadFilePath, 'utf-8')
 		);
 
-		const threadData = {
-			...thread,
-		};
 		if (name) thread.name = name;
 		if (systemPrompt) thread.systemPrompt = systemPrompt;
-		if (ttsEnabled) thread.ttsEnabled = ttsEnabled;
+		if (ttsEnabled !== undefined) thread.ttsEnabled = ttsEnabled;
 		if (ttsVoiceId) thread.ttsVoiceId = ttsVoiceId;
 		else if (ttsEnabled && !thread.ttsVoiceId)
 			thread.ttsVoiceId = voices[0].voice_id;
