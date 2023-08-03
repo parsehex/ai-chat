@@ -9,10 +9,11 @@
 		</button>
 		<component
 			:is="inputType"
-			class="w-full p-2 dark:bg-gray-700"
-			:class="{ 'h-10': inputType === 'textarea' }"
+			class="w-full p-2 h-10 dark:bg-gray-700"
+			:class="{ 'textarea-max-height': inputType === 'textarea' }"
 			:value="modelValue"
 			@input="updateValue"
+			@keydown.ctrl.enter="submit"
 		/>
 	</div>
 </template>
@@ -31,18 +32,26 @@ defineProps({
 	},
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'submit']);
 
 let inputType = ref('textarea');
-let lengthThreshold = 100;
 
 const updateValue = (event: InputEvent) => {
 	const value = (event.target as HTMLInputElement).value;
 	emit('update:modelValue', value);
-	inputType.value = 'textarea';
 };
 
 const toggleInputType = () => {
-	inputType.value = 'textarea';
+	inputType.value = inputType.value === 'textarea' ? 'input' : 'textarea';
+};
+
+const submit = () => {
+	emit('submit');
 };
 </script>
+
+<style scoped>
+textarea {
+	max-height: 20vh;
+}
+</style>

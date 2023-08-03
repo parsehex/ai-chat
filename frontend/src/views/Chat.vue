@@ -32,6 +32,7 @@
 					<FlexibleTextInput
 						class="flex-grow border-2 border-gray-300 rounded-md px-1"
 						v-model="systemPrompt"
+						@submit="updateSystemPrompt"
 					/>
 				</label>
 				<button class="btn" @click="updateSystemPrompt">Update</button>
@@ -98,7 +99,11 @@
 					class="flex"
 				>
 					<!-- editing message -->
-					<FlexibleTextInput class="flex-grow" v-model="message.content" />
+					<FlexibleTextInput
+						class="flex-grow"
+						v-model="message.content"
+						@submit="updateMessage(message.id, message.content)"
+					/>
 					<button
 						class="btn"
 						@click="updateMessage(message.id, message.content)"
