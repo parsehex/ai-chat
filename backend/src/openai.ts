@@ -1,6 +1,9 @@
 import OpenAI from 'openai';
 import fs from 'fs';
 import axios from 'axios';
+// import { ChatOpenAI } from "langchain/chat_models/openai";
+import { OpenAI as ChatOpenAI } from 'langchain/llms/openai';
+import { HumanMessage } from 'langchain/schema';
 import {
 	beginStreamMessage,
 	endStreamMessage,

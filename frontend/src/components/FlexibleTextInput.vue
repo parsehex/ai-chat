@@ -10,7 +10,7 @@
 		<component
 			:is="inputType"
 			class="w-full p-2 dark:bg-gray-700"
-			:class="{ 'h-20': inputType === 'textarea' }"
+			:class="{ 'h-10': inputType === 'textarea' }"
 			:value="modelValue"
 			@input="updateValue"
 		/>
@@ -33,23 +33,16 @@ defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-let inputType = ref('input');
+let inputType = ref('textarea');
 let lengthThreshold = 100;
 
 const updateValue = (event: InputEvent) => {
 	const value = (event.target as HTMLInputElement).value;
 	emit('update:modelValue', value);
-	if (value.length > lengthThreshold && inputType.value === 'input') {
-		inputType.value = 'textarea';
-	} else if (
-		value.length <= lengthThreshold &&
-		inputType.value === 'textarea'
-	) {
-		inputType.value = 'input';
-	}
+	inputType.value = 'textarea';
 };
 
 const toggleInputType = () => {
-	inputType.value = inputType.value === 'input' ? 'textarea' : 'input';
+	inputType.value = 'textarea';
 };
 </script>
