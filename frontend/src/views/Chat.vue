@@ -48,7 +48,7 @@
 			>
 				<div
 					v-if="!isEditing(message.id)"
-					class="flex items-center justify-between"
+					class="flex items-start justify-between"
 				>
 					<div class="inline-flex flex-col">
 						<span
