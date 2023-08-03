@@ -1,5 +1,5 @@
 <template>
-	<div class="flex-grow flex flex-col h-screen overflow-hidden">
+	<div class="flex-grow flex flex-col h-screen w-full overflow-hidden">
 		<div class="sticky bg-gray-300 dark:bg-gray-700 top-0 z-10 p-2">
 			<!-- header -->
 			<h2 class="text-xl">
