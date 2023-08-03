@@ -55,7 +55,7 @@
 							class="text-sm cursor-default select-none underline dark:text-gray-400"
 							>{{ message.role }}</span
 						>
-						<span class="whitespace-pre-line">{{ message.content }}</span>
+						<span class="whitespace-pre">{{ message.content }}</span>
 					</div>
 					<div class="inline-flex">
 						<AudioPlayer v-if="message.tts" :ttsUrl="message.tts" />
